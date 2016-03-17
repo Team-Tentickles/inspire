@@ -35,4 +35,4 @@ git branch <BRANCH_NAME>
 git checkout <BRANCH_NAME>
 ```
 
-Make sure you're committing and pushing your changes as you work. Once you've finished making all of the changes you want to make, submit a pull request so it can be reviewed and merged into the main branch. For more information on how to submit a pull request [see this artist](https://help.github.com/articles/using-pull-requests/)
+Make sure you're committing and pushing your changes as you work. Once you've finished making all of the changes you want to make, submit a pull request so it can be reviewed and merged into the main branch. For more information on how to submit a pull request [see this article](https://help.github.com/articles/using-pull-requests/)
