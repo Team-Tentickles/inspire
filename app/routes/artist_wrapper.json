@@ -1,0 +1,129 @@
+{
+    "artist": [
+        {
+            "artistName": "Cheap Trick",
+            "yearsActive": "1970s - 2000s",
+            "influences": [
+                {
+                    "name": "The Beach Boys",
+					"decade": "1960s",
+					"bio": "The Beach Boys are an American rock band formed in Hawthorne, California in 1961. The group's original lineup consisted of brothers Brian, Dennis, and Carl Wilson, their cousin Mike Love, and their friend Al Jardine. They emerged at the vanguard of the \"California Sound\", performing original surf songs that gained international popularity for their distinct vocal harmonies and lyrics reflecting a southern California youth culture of surfing, cars, and romance. Rooted in jazz-based vocal groups, 1950s rock and roll, and doo-wop, Brian led the band in devising novel approaches to music production, arranging his compositions for studio orchestras, and experimenting with several genres ranging from pop ballads to psychedelic and baroque.",
+					"image": "https://upload.wikimedia.org/wikipedia/en/d/d5/The_Beach_Boys_-_That's_Why_God_Made_the_Radio_Album_Cover.jpg",
+					"video": "iframe width='420' height='315' src='https://www.youtube.com/embed/bGp1a4O29oI' frameborder='0' allowfullscreen"
+                },
+                {
+                    "name": "The Beatles",
+					"decade": "1960s-70s",
+					"bio": "The Beatles were an English rock band, formed in Liverpool in 1960. With members John Lennon, Paul McCartney, George Harrison and Ringo Starr, they became widely regarded as the foremost and most influential act of the rock era.[1] Rooted in skiffle, beat, and 1950s rock and roll, the Beatles later experimented with several musical styles, ranging from pop ballads and Indian music to psychedelia and hard rock, often incorporating classical elements in innovative ways. In the early 1960s, their enormous popularity first emerged as \"Beatlemania\", but as the group's music grew in sophistication, led by primary songwriters Lennon and McCartney, they came to be perceived as an embodiment of the ideals shared by the counterculture of the 1960s.",
+					"image": "http://cdn8.openculture.com/wp-content/uploads/2013/07/Abbey-Road-Album-Cover-.jpg",
+					"video": "iframe width='420' height='315' src='https://www.youtube.com/embed/brwmLjD-3Hw' frameborder='0' allowfullscreen"
+                },
+                {
+                    "name": "The Raspberries",
+					"decade": "1970s",
+					"bio": "The Raspberries were an American power pop/pop rock band formed in 1970 from Cleveland, Ohio. They had a run of success in the early 1970s music scene with their pop sound, which Allmusic later described as featuring \"exquisitely crafted melodies and achingly gorgeous harmonies.\"[3] The members were known for their clean-cut public image, with short-hair and matching suits, which brought them teenybopper attention as well as scorn from some mainstream media outlets as \"uncool\".[4] The group drew influence from the British Invasion era—especially The Beatles, The Who, The Hollies, and Small Faces—and its mod sensibility.[3] In both the U.S. and the UK, the Raspberries helped pioneer the power pop music style that took off after the group disbanded.[5] They also have a following among professional musicians such as Jack Bruce, Ringo Starr,[6] and Courtney Love.[7]",
+					"image": "http://rymimg.com/lk/f/l/6e35c27690612a9fea8aa36222da469e/2472320.jpg",
+					"video": "iframe width='420' height='315' src='https://www.youtube.com/embed/7wT_NpsYdes' frameborder='0' allowfullscreen"
+                },
+                {
+                    "name": "The Who",
+					"decade": "1960s",
+					"bio": "The Who are an English rock band that formed in 1964. Their classic line-up consisted of lead singer Roger Daltrey, guitarist Pete Townshend, bassist John Entwistle, and drummer Keith Moon. They are considered one of the most influential rock bands of the 20th century, selling over 100 million records worldwide and holding a reputation for their live shows and studio work.",
+					"image": "http://www.thewho.info/photogallery/photo24574/TheWho-LP-IS2.jpg",
+					"video": "iframe width='420' height='315' src='https://www.youtube.com/embed/HbRbk_RZRRI' frameborder='0' allowfullscreen"
+                },
+                {
+                    "name": "Badfinger",
+					"decade": "1960s",
+					"bio": "Badfinger were a British rock band that, in their most prolific lineup, consisted of Pete Ham, Mike Gibbins, Tom Evans and Joey Molland. The band evolved from an earlier group called The Iveys that was formed in 1961 by Ham, Ron Griffiths and David \"Dai\" Jenkins in Swansea, Wales. They were the first group signed by the Beatles' Apple label in 1968 as The Iveys. In 1969, Griffiths left and was replaced by Molland, and the band renamed themselves Badfinger. In 1970, the band engaged American businessman Stan Polley to manage their commercial affairs. Over the next five years the band recorded several albums for Apple and toured extensively, before they became embroiled in the chaos of Apple Records' dissolution.",
+					"image": "http://ecx.images-amazon.com/images/I/5195jh1X2ZL.jpg",
+					"video": "iframe width='420' height='315' src='https://www.youtube.com/embed/C53QAuOoSgc' frameborder='0' allowfullscreen"
+                }
+            ]
+        },
+        {
+            "artistName": "The Beatles",
+            "yearsActive": "1960s - 1970s",
+            "influences": [
+                {
+                    "name": "Buddy Holly"
+                },
+                {
+                    "name": "Carl Perkins"
+                },
+                {
+                    "name": "Chuck Berry"
+                },
+                {
+                    "name": "Elvis Presley"
+                },
+                {
+                    "name": "Fats Domino"
+                }
+            ]
+        },
+        {
+            "artistName": "Steve Miller",
+            "yearsActive": "1960s - 2010s",
+            "influences": [
+                {
+                    "name": "Cream"
+                },
+                {
+                    "name": "Jimmy Reed"
+                },
+                {
+                    "name": "Les Paul"
+                },
+                {
+                    "name": "B.B. King"
+                },
+                {
+                    "name": "Johnny Watson"
+                }
+            ]
+        },
+		{
+            "artistName": "Aerosmith",
+            "yearsActive": "1970s - 2010s",
+            "influences": [
+                {
+                    "name": "Chuck Berry"
+                },
+                {
+                    "name": "Led Zeppelin"
+                },
+                {
+                    "name": "The Rolling Stones"
+                },
+                {
+                    "name": "The Yardbirds"
+                },
+                {
+                    "name": "Bo Diddley"
+                }
+            ]
+        },
+		{
+            "artistName": "The Kinks",
+            "yearsActive": "1960s - 1990s",
+            "influences": [
+                {
+                    "name": "Bo Diddley"
+                },
+                {
+                    "name": "Chuck Berry"
+                },
+                {
+                    "name": "The Beatles"
+                },
+                {
+                    "name": "Little Richard"
+                },
+                {
+                    "name": "The Shadows"
+                }
+            ]
+        }
+    ]
+}

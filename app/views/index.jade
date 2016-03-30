@@ -1,6 +1,15 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1= name
+  h2 Decade ( #{decade} )
+  h2 Influences:
+  ul
+   for item in influences
+    li
+     h3 #{item.name}
+     p #{item.decade}
+     p #{item.bio}
+     img(width='300px', height='auto' alt='album cover', src= '#{item.image}')
+     #{item.video}
   script(src='/socket.io/socket.io.js')
