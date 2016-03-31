@@ -3,8 +3,8 @@ var socketio = require('socket.io');
 var io = socketio();
 
 io.sockets.on("connection", function(socket) {
-	console.log("Aye");
-	utils.makePackage({'first': 'Taylor Swift', 'second': 'Kelly Clarkson'}, socket);
+	console.log("Connection detected");
+	//utils.makePackage({'first': 'Taylor Swift', 'second': 'Kelly Clarkson'}, socket);
 
 	socket.on('serverArtist', function(data){
 		utils.makePackage(data, socket);
