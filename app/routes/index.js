@@ -3,7 +3,6 @@ var router = express.Router();
 var artistData = require('./artist_wrapper.json');
 var artists = require('artist-data');
 var i = 0; // artist index
-console.log(artists);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
