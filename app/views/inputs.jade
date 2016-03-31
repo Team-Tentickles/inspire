@@ -1,0 +1,15 @@
+extends selectionLayout
+
+block content
+ select#first
+  each decade, year in allArtists
+   optgroup(label=year)
+    for artist in decade
+     option #{artist.name}
+ select#second
+  each decade, year in allArtists
+   optgroup(label=year)
+    for artist in decade
+     option #{artist.name}
+  script(src='/socket.io/socket.io.js')
+ 
