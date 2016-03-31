@@ -40,3 +40,4 @@ Make sure you're committing and pushing your changes as you work. Once you've fi
 "# Jade-Artist-Template" 
 "# Jade-Artist-Template" 
 "# Jade-Artist-Template" 
+"# Jade-Artist-Template" 
