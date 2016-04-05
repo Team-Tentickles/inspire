@@ -4,7 +4,7 @@ var io = socketio();
 
 io.sockets.on("connection", function(socket) {
 	console.log("Connection detected");
-	//utils.makePackage({'first': 'Taylor Swift', 'second': 'Kelly Clarkson'}, socket);
+	utils.makePackage({'first': 'Beach Boys', 'second': 'Spice Girls'}, socket);
 
 	socket.on('serverArtist', function(data){
 		utils.makePackage(data, socket);

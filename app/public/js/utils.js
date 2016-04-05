@@ -1,5 +1,5 @@
-var rovi = require('./rovi.js'),
-	echo = require('./echo.js'),
+var rovi = require('rovijs'),
+	echo = require('echonestjs'),
 	async = require('async'),
 	discogs = require("disconnect").Client,
 	config = require('./config/config.js');
@@ -32,6 +32,7 @@ var findSimilar = function(data, callback){
 			console.log(err);
 		}
 		else{
+			console.log(res.response.artists[0]);
 			callback(null, res.response.artists[0]);
 		}
 	});
@@ -144,7 +145,7 @@ var makePackage = function(data, socket){
 					dataPackage.similar.images.push({'url':results.similarImg});
 					dataPackage.similar.influencers.push({'name':results.similarInflu});
 
-					//console.log(dataPackage);
+					console.log(dataPackage);
 
 					socket.emit('package', dataPackage);
 				}
