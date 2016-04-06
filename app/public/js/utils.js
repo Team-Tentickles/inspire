@@ -41,7 +41,7 @@ var findSimilar = function(data, callback){
 //Find Images for artist using discogs
 //Currently only logs images
 var findPhoto = function(data, callback){
-	db.search('Katy Perry', {'type': 'artist'}, function(err, data){
+	db.search(data, {'type': 'artist'}, function(err, data){
 
 		db.artist(data.results[0].id, function(err, data2) {
 		   if(err){
@@ -144,7 +144,7 @@ var makePackage = function(data, socket){
 					dataPackage.similar.images.push({'url':results.similarImg});
 					dataPackage.similar.influencers.push({'name':results.similarInflu});
 
-					//console.log(dataPackage);
+					console.log(dataPackage);
 
 					socket.emit('package', dataPackage);
 				}

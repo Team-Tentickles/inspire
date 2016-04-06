@@ -11,5 +11,16 @@ block content
    optgroup(label=year)
     for artist in decade
      option #{artist.name}
- button#send Send  
- 
+ button#send Send
+ div(style='float:left; display:inline-block;')
+    img#fImage
+    br
+    iframe#fVideo(width='480', height='390', frameborder='0')
+    br
+    p#influ
+  div(style='float:right; display:inline-block;')
+    img#sImage
+    br
+    iframe#sVideo(width='480', height='390', frameborder='0')
+    br
+    p#sinflu
