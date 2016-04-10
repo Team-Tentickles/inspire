@@ -3,6 +3,16 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
+    script(type='text/javascript').
+      var local_data = !{JSON.stringify(allArtists)};
+    script(type='text/javascript', src='/javascripts/main.js')
+    script(type='text/javascript', src='/javascripts/start.js')
+    script(type='text/javascript', src='/javascripts/selection.js')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js')
   body
-    block content
-    script(src='/socket.io/socket.io.js')
+
+    canvas#canvas
+
+    //block content
+    
+    //script(src='/socket.io/socket.io.js')
