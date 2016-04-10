@@ -144,9 +144,10 @@ var makePackage = function(data, socket){
 					dataPackage.similar.images.push({'url':results.similarImg});
 					dataPackage.similar.influencers.push({'name':results.similarInflu});
 
-					console.log(dataPackage);
-
-					socket.emit('package', dataPackage);
+                    var imgURL = dataPackage.first.images[0].url;
+                    socket.to("AssetShare").emit("flatPackage", { image: imgURL });
+					socket.to("AssetShare").emit('package', dataPackage);
+                    socket.emit("package", dataPackage);
 				}
 			);
 		}
