@@ -1,5 +1,6 @@
-var rovi = require('./rovi.js'),
-	echo = require('./echo.js'),
+var rovi = require('rovijs'),
+	echo = require('echonestjs'),
+	spotifyAPI = require('spotify-web-api-node'),
 	async = require('async'),
 	discogs = require("disconnect").Client,
 	config = require('./config/config.js');
@@ -8,6 +9,12 @@ var rovi = require('./rovi.js'),
 rovi.init(config.rovi.key, config.rovi.secret);
 echo.init(config.echo.key);
 var dis = new discogs({userToken: 'xQSstXxQtGrcxUDRGSHJYjshQcuqYgbsBQlMKagH'});
+
+var spotify = new spotifyAPI({
+	clientId: config.spotify.clientId,
+	clientSecret: config.spotify.secret
+});
+
 var db = dis.database();
 
 //finds the influeners using rovi
@@ -72,6 +79,33 @@ var findVideo = function(data, callback){
 		}
 	});
 };
+
+//Finds song for artist  using Spotify
+var findSong = function(data){
+	spotify.searchArtists(data.first, {type: 'artist'}, function(err, data){
+		if (err){
+			console.log(err);
+		}
+		else{
+			spotify.getArtistTopTracks(data.body.artists.items[0].id, 'US', function(err, data){
+				if (err){
+					console.log(err);
+				}
+				else{
+					console.log(data.body.tracks[0].name);
+					spotify.getTrack(data.body.tracks[0].id, function(err, data){
+						if (err){
+							console.log(err);
+						}
+						else{
+							console.log(data.body.external_urls.spotify);
+						}
+					});
+				}
+			});
+		}
+	});
+}
 
 //Calls each function and makes it into a single object
 var makePackage = function(data, socket){
@@ -154,3 +188,4 @@ var makePackage = function(data, socket){
 };
 
 module.exports.makePackage = makePackage;
+module.exports.findSong = findSong;

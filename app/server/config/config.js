@@ -14,6 +14,11 @@ config.echo = {
 config.flickr = {
 	key: '181daac5cf4e9c9d278496da080b7b9e',
 	secret: '00668447d00bdae7'
-}
+};
+
+config.spotify = {
+	clientId: '2748cac1ef194ec3a4003a95c01afb7f',
+	secret: '67177fe6e4be4d4c8ef7cadd75af4dad'
+};
 
 module.exports = config;
