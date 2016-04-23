@@ -14,7 +14,9 @@ var db = dis.database();
 var findInflu = function(data, callback){
 	rovi.get("name/influencers", { "name": data}, function (err, res) {
 		if(err){
+            console.error("failed to find influence");
 			console.log(err);
+            callback(err, "");
 		}
 		else{
 			callback(null, res.influencers[0].name);
@@ -29,7 +31,9 @@ var findSimilar = function(data, callback){
 
 	echo.get("artist/similar", {"name": artistnames }, function (err, res) {
 		if(err){
+            console.error("failed to find similar artist");
 			console.log(err);
+            callback(err, "");
 		}
 		else{
 			callback(null, res.response.artists[0]);
@@ -45,13 +49,15 @@ var findPhoto = function(data, callback){
 
 		db.artist(data.results[0].id, function(err, data2) {
 		   if(err){
-			console.log(err);
+                console.error("failed to find photo");
+			    console.log(err);
+                callback(err, "");
 			}
 			else{
 				callback(null, data2.images[0].resource_url);
 			}
 		}); 
-	});		
+	});
 };
 
 //Finds video for artist
@@ -61,7 +67,9 @@ var findPhoto = function(data, callback){
 var findVideo = function(data, callback){
 	echo.get("artist/video", { "name": data}, function (err, res) {
 		if(err){
+            console.error("failed to find video");
 			console.log(err);
+            callback(err, "");
 		}
 		else{
 			var oURL = res.response.video[0].url;
