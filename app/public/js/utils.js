@@ -160,7 +160,7 @@ var makePackage = function(data, socket){
 			dataPackage.second.video.push({'url':results.secondVideo});
 			dataPackage.first.images.push({'url':results.firstImg});
 			dataPackage.second.images.push({'url':results.secondImg});
-			console.log(results.similar.name);
+			console.log('The similar artist is ' + results.similar.name);
 			/*dataPackage.first.influencers.push({'name':results.firstInflu});
 			dataPackage.second.influencers.push({'name':results.secondInflu});*/
 
@@ -184,8 +184,6 @@ var makePackage = function(data, socket){
 					dataPackage.similar.images.push({'url':results.similarImg});
 					//dataPackage.similar.influencers.push({'name':results.similarInflu});
 					dataPackage.similar.song.push({'url':results.similarSong});
-
-					console.log(dataPackage);
 
 					socket.emit('package', dataPackage);
 				}

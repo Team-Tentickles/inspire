@@ -34,12 +34,6 @@ var init = function(){
         var audioObject = new Audio(data.similar.song[0].url);
         audioObject.play();
     });
-
-    socket.on('test', function(data){
-        console.log('testing');
-        var audioObject = new Audio('https://p.scdn.co/mp3-preview/26e409b39a2da6dc18fab61020c90be2938dc0e9')
-        audioObject.play();
-    });
     
     //* This will be the function to get the artist and send it to socket to process *//
     //* Use the 'serverArtist' as the emit command and put in your own variables for "first" and "second" *//
