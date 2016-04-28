@@ -1,4 +1,4 @@
-var utils = require('./server/utils.js')
+var utils = require('./public/js/utils.js')
 var socketio = require('socket.io');
 var io = socketio();
 
@@ -7,8 +7,7 @@ io.sockets.on("connection", function(socket) {
 
 	socket.on('serverArtist', function(data){
         console.log("Searching...");
-		//utils.makePackage(data, socket);
-		utils.findSong(data);
+		utils.makePackage(data, socket);
 	});
 });
 
