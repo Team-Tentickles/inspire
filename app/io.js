@@ -7,8 +7,8 @@ io.sockets.on("connection", function(socket) {
 
 	socket.on('serverArtist', function(data){
         console.log("Searching...");
-		//utils.makePackage(data, socket);
-		utils.findSong(data);
+		utils.makePackage(data, socket);
+		// utils.findSong(data);
 	});
 });
 
