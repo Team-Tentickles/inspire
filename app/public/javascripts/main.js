@@ -38,7 +38,7 @@ inspireApp.main ={
 		// set vars
 		this.gameState = this.GAME_STATE_START;
 		// gameState ready functions
-		inspireApp.selection.ready(this.artistData, this.CANVAS_WIDTH);
+		inspireApp.selection.ready(this.artistData);
 		// call draw
 		this.draw();
 	},
@@ -46,17 +46,18 @@ inspireApp.main ={
 	draw:function(timestamp){
 		// Throttle the frame rate.
 		var app = inspireApp.main;
-		if (timestamp < app.lastFrameTimeMs + (1000 / app.maxFPS)) {
-			requestAnimationFrame(app.draw);
-			return;
-		}
+		requestAnimationFrame(this.draw.bind(this));
+		//if (timestamp < app.lastFrameTimeMs + (1000 / app.maxFPS)) {
+		//	requestAnimationFrame(app.draw);
+		//	return;
+		//}
 		//app.delta += timestamp - app.lastFrameTimeMs;
-		app.lastFrameTimeMs = timestamp;
-		while (app.delta >= app.timestep) {
+		//app.lastFrameTimeMs = timestamp;
+		//while (app.delta >= app.timestep) {
 			// UPDATE FUNCTION
 			// update(timestep);
-			app.delta -= app.timestep;
-		}
+		//	app.delta -= app.timestep;
+		//}
 		// DRAW FUNCTIONS
 		// background
 		ctx.save();
@@ -67,11 +68,11 @@ inspireApp.main ={
 		inspireApp.start.draw();
 		inspireApp.selection.draw(app.mouse, app.mouseIsDown);
 		
-		requestAnimationFrame(app.draw);
+		//requestAnimationFrame(app.draw);
 		
 		
 		
-		//requestAnimationFrame(this.draw.bind(this));
+		
 	},
 	
 	changeGameState:function(){
@@ -95,10 +96,52 @@ inspireApp.main ={
 			inspireApp.selection.checkClicks(app.mouse);
 		}
 	},
-	
-	animation:function(){
+	preloadImages:function(data){
+
+		var newImages = []; // array of image objects
+		var images = []; // array of image src's
+		var loadedimages = 0; // counts loaded images
 		
-	
+		
+		// Get images from the data
+		for(var a = 0; a < data.decade.length; a++){
+			for(var b = 0; b < data.decade[a].artistsArray.length; b++){
+				var artistImages = data.decade[a].artistsArray[b].images;
+				images.push(artistImages);
+			}
+		}
+		
+		function imageloadpost(){
+			loadedimages++
+
+			if (loadedimages == images.length){
+				// Once images are loaded..
+				var resizedImages = inspireApp.main.resizeImages(newImages);			
+				inspireApp.selection.artistImages = resizedImages;
+				inspireApp.main.ready();		
+			}
+		}
+		for (var i = 0; i < images.length; i++){
+			newImages[i] = new Image();
+			newImages[i].src = images[i];
+			newImages[i].onload = function(){
+				imageloadpost()
+			}
+			newImages[i].onerror=function(){
+				imageloadpost()
+			}
+		}	
+	},
+	resizeImages:function(newImages){		
+		var newDimensions = {w:undefined, h:inspireApp.selection.dropZoneDimensions.h};		
+		for(var i = 0; i < newImages.length; i++){
+			var oldWidth = newImages[i].width;
+			var oldHeight = newImages[i].height;
+			newDimensions.w = (newDimensions.h * oldWidth)/oldHeight;			
+			newImages[i].width = newDimensions.w;
+			newImages[i].height = newDimensions.h;		
+		}
+		return newImages;
 	}
 };
 window.onload = function(){
@@ -108,13 +151,15 @@ window.onload = function(){
 	// canvas
 	this.canvas = document.getElementById("canvas");
 	this.ctx = this.canvas.getContext('2d');
+	// Preload artist images
+	inspireApp.main.preloadImages(inspireApp.main.artistData);
 	// event Listeners
-	this.canvas.addEventListener("mousedown", function(){inspireApp.main.clickFunctions(event);inspireApp.main.mouseIsDown = true}, false);
+	this.canvas.addEventListener("mousedown", function(){inspireApp.main.clickFunctions();inspireApp.main.mouseIsDown = true}, false);
 	this.canvas.addEventListener("mouseup", function(){inspireApp.main.mouseIsDown = false}, false);
 	this.canvas.addEventListener("mouseout", function(){inspireApp.main.mouseIsDown = false}, false);
 	this.canvas.addEventListener("mousemove", inspireApp.main.getMouse,false);
 	// initialize app
-	inspireApp.main.ready();
+	//inspireApp.main.ready();
 }
 
 
