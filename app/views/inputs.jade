@@ -2,14 +2,14 @@ extends selectionLayout
 
 block content
  select#first
-  each decade, year in allArtists
-   optgroup(label=year)
-    for artist in decade
+  each decade in allArtists.decade
+   optgroup(label=decade.year)
+    for artist in decade.artistsArray
      option #{artist.name}
  select#second
-  each decade, year in allArtists
-   optgroup(label=year)
-    for artist in decade
+  each decade in allArtists.decade
+   optgroup(label=decade.year)
+    for artist in decade.artistsArray
      option #{artist.name}
  button#send Send
  div(style='float:left; display:inline-block;')
