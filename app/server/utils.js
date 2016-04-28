@@ -59,7 +59,11 @@ var findPhoto = function(data, callback){
 				console.log(err);
 			}
 			else{
-				callback(null, data2.images[0].resource_url);
+				var imgArray = data2.images.map(function (img) {
+					console.log(img);
+					return {'url': img.resource_url}
+				});
+				callback(null, imgArray);
 			}
 		}); 
 	});		
@@ -118,7 +122,13 @@ var findSong = function(data){
  * function, return a flattened version
  */
 var flattenPackage = function(package) {
-	
+	var flat = {
+		artistImage11: package.first.images[0].url,
+		artistImage12: package.first.images[1].url,
+		artistImage21: package.second.images[0].url,
+		artistImage22: package.second.images[1].url
+	};
+	return flat
 };
 
 
@@ -171,8 +181,8 @@ var makePackage = function(data, socket){
 		function(err, results){
 			dataPackage.first.video.push({'url': results.firstVideo});
 			dataPackage.second.video.push({'url':results.secondVideo});
-			dataPackage.first.images.push({'url':results.firstImg});
-			dataPackage.second.images.push({'url':results.secondImg});
+			dataPackage.first.images = results.firstImg;
+			dataPackage.second.images = results.secondImg;
 			dataPackage.first.influencers.push({'name':results.firstInflu});
 			dataPackage.second.influencers.push({'name':results.secondInflu});
 
@@ -190,12 +200,15 @@ var makePackage = function(data, socket){
 				},
 				function(err,results){
 					dataPackage.similar.video.push({'url': results.similarVideo});
-					dataPackage.similar.images.push({'url':results.similarImg});
+					dataPackage.similar.images = results.similarImg;
 					dataPackage.similar.influencers.push({'name':results.similarInflu});
 
 					console.log(util.inspect(dataPackage));
-
-					socket.emit('package', dataPackage);
+					
+					
+					var flatPackage = flattenPackage(dataPackage);
+					socket.to("AssetShare").emit('flat-package', flatPackage);
+					socket.to("AssetShare").emit('package', dataPackage);
 				}
 			);
 		}
