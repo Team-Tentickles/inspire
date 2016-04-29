@@ -11,9 +11,8 @@ router.get('/', function(req, res, next) {
 });
 router.get('/select', function(req, res, next) {
   // Selection and inputs
-  res.render('inputs', { allArtists: artists });
+  //res.render('inputs', { allArtists: artists });
+  res.render('selectionLayout', { allArtists: artists });
+
 });
 module.exports = router;
-/*
-C:\Users\Owner\Desktop\inspire
-*/
