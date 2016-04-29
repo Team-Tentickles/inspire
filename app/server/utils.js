@@ -205,10 +205,10 @@ var makePackage = function(data, socket){
 
 					console.log(util.inspect(dataPackage));
 					
-					
 					var flatPackage = flattenPackage(dataPackage);
-					socket.to("AssetShare").emit('flat-package', flatPackage);
-					socket.to("AssetShare").emit('package', dataPackage);
+					socket.broadcast.to("AssetShare").emit('flat-package', flatPackage);
+					socket.broadcast.to("AssetShare").emit('package', dataPackage);
+					socket.emit('package', dataPackage);
 				}
 			);
 		}

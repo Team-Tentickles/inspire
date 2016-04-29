@@ -13,6 +13,8 @@ router.get('/select', function(req, res, next) {
   // Selection and inputs
   //res.render('inputs', { allArtists: artists });
   res.render('selectionLayout', { allArtists: artists });
-
+});
+router.get('/test', function(req, res, next) {
+  res.render('testSelection', { allArtists: artists });
 });
 module.exports = router;
