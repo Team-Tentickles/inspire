@@ -23,6 +23,8 @@ inspireApp.main ={
 	timestep: 1000/60,
 	mouseIsDown:false,
 	
+	socketHanlder: SocketHandler(),
+	
 	// VARS
 	gameState:undefined,
 	
