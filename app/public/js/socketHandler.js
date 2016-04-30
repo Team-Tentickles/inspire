@@ -24,11 +24,15 @@ var init = function(){
 
         fImage.src = data.first.images[0].url;
         fVideo.src = data.first.video[0].url;
-        influ.innerHTML = data.first.influencers[0].name;
+        //influ.innerHTML = data.first.influencers[0].name;
 
         sImage.src = data.second.images[0].url;
         sVideo.src = data.second.video[0].url;
-        sinflu.innerHTML = data.second.influencers[0].name;
+        //sinflu.innerHTML = data.second.influencers[0].name;
+        console.log(data.similar.song);
+        var audioObject = new Audio(data.similar.song);
+        audioObject.play();
+
     });
     
     //* This will be the function to get the artist and send it to socket to process *//

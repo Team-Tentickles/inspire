@@ -60,7 +60,6 @@ var findPhoto = function(data, callback){
 			}
 			else{
 				var imgArray = data2.images.map(function (img) {
-					console.log(img);
 					return {'url': img.resource_url}
 				});
 				callback(null, imgArray);
@@ -90,24 +89,26 @@ var findVideo = function(data, callback){
 };
 
 //Finds song for artist  using Spotify
-var findSong = function(data){
-	spotify.searchArtists(data.first, {type: 'artist'}, function(err, data){
+var findSong = function(data, callback){
+	console.log(data);
+	spotify.searchArtists(data, {type: 'artist'}, function(err, data){
 		if (err){
-			console.log(err);
+			console.log('Song Error: ' + err);
 		}
 		else{
 			spotify.getArtistTopTracks(data.body.artists.items[0].id, 'US', function(err, data){
 				if (err){
-					console.log(err);
+					console.log('Song Error: ' + err);
 				}
 				else{
-					console.log(data.body.tracks[0].name);
+					//console.log(data.body.tracks[0].name);
 					spotify.getTrack(data.body.tracks[0].id, function(err, data){
 						if (err){
-							console.log(err);
+							console.log('Song Error: ' + err);
 						}
 						else{
-							console.log(data.body.external_urls.spotify);
+							console.log(data.body.preview_url);
+							callback(null, data.body.preview_url);
 						}
 					});
 				}
@@ -183,7 +184,8 @@ var makePackage = function(data, socket){
 		similar: {
 			images: [],
 			video: [],
-			influencers: []
+			influencers: [],
+			song: []
 		}
 	};
 
@@ -203,12 +205,12 @@ var makePackage = function(data, socket){
 			secondImg: function(callback){
 				findPhoto(data.second, callback);
 			},
-			firstInflu: function(callback){
+			/*firstInflu: function(callback){
 				findInflu(data.first, callback);
 			},
 			secondInflu: function(callback){
 				findInflu(data.second, callback);
-			},
+			},*/
 			similar: function(callback){
 				findSimilar(data, callback);
 			}
@@ -218,8 +220,8 @@ var makePackage = function(data, socket){
 			dataPackage.second.video.push({'url':results.secondVideo});
 			dataPackage.first.images = results.firstImg;
 			dataPackage.second.images = results.secondImg;
-			dataPackage.first.influencers.push({'name':results.firstInflu});
-			dataPackage.second.influencers.push({'name':results.secondInflu});
+			/*dataPackage.first.influencers.push({'name':results.firstInflu});
+			dataPackage.second.influencers.push({'name':results.secondInflu});*/
 
 			async.parallel(
 				{
@@ -229,17 +231,20 @@ var makePackage = function(data, socket){
 					similarImg: function(callback){
 						findPhoto(results.similar.name, callback);
 					},
-					similarInflu: function(callback){
-						findInflu(results.similar.name, callback);
+					similarSong: function(callback){
+						findSong(results.similar.name, callback);
 					}
+					/*similarInflu: function(callback){
+						findInflu(results.similar.name, callback);
+					}*/
 				},
 				function(err,results){
 					dataPackage.similar.video.push({'url': results.similarVideo});
 					dataPackage.similar.images = results.similarImg;
-					console.log(util.inspect(results));
 					dataPackage.similar.influencers.push({'name':results.similarInflu});
 
-					// console.log(util.inspect(dataPackage));
+					console.log(util.inspect(dataPackage));
+					dataPackage.similar.song = results.similarSong;
 					
 					var flatPackage = flattenPackage(dataPackage);
 					socket.broadcast.to("AssetShare").emit('flat-package', flatPackage);
