@@ -88,15 +88,53 @@ var findVideo = function(data, callback){
 	});
 };
 
-//Finds song for artist  using Spotify
-var findSong = function(data, callback){
+//Helper function to turn names into spotify IDs
+var findArtistId = function(data, callback){
 	console.log(data);
 	spotify.searchArtists(data, {type: 'artist'}, function(err, data){
 		if (err){
-			console.log('Song Error: ' + err);
+			console.log ('ID Error: ' + err);
 		}
 		else{
-			spotify.getArtistTopTracks(data.body.artists.items[0].id, 'US', function(err, data){
+			console.log(data.body.artists.items[0].id);
+			callback(null, data.body.artists.items[0].id);
+		}
+	});
+}
+
+//Find artist album art using spotify
+var findAlbumArt = function(data, callback){
+	findArtistId(data, function(err,data){
+		if(err){
+			console.log('ID Error: ' + err)
+		}
+		else{
+			console.log(data);
+			spotify.getArtistAlbums(data, 'US', function(err, data){
+				if(err){
+					console.log('Album Error: ' + err);
+				}
+				else{
+					var imgArray = data.body.items.map(function (img) {
+						return {'url': img.images[0].url}
+					});
+
+					callback(null, imgArray);				
+				}
+			});
+		}
+	});
+}
+
+//Finds song for artist  using Spotify
+var findSong = function(data, callback){
+	console.log(data);
+	findArtistId(data, function(err, data){
+		if (err){
+			console.log('ID Error: ' + err);
+		}
+		else{
+			spotify.getArtistTopTracks(data, 'US', function(err, data){
 				if (err){
 					console.log('Song Error: ' + err);
 				}
@@ -123,13 +161,31 @@ var findSong = function(data, callback){
  * function, return a flattened version
  */
 var flattenPackage = function(package) {
-	
 	var flat = {};
 	
 	/*
 	 * For each section, add the url for the specified image if it exists.
 	 * If it does not exist, add an empty string.
 	 */
+	if(package.first.name){
+		flat.starting1 = package.first.name;
+	} else {
+		flat.starting1 = "";
+	}
+
+	if(package.second.name){
+		flat.starting2 = package.second.name;
+	} else {
+		flat.starting2 = "";
+	}
+
+	if(package.similar.name){
+		flat.similar = package.similar.name;
+	} else {
+		flat.similar = "";
+	}
+
+
 	if (package.first.images) {
 		flat.artistImage11 = package.first.images[0] ? package.first.images[0].url : "";
 		flat.artistImage12 = package.first.images[1] ? package.first.images[1].url : "";
@@ -163,27 +219,67 @@ var flattenPackage = function(package) {
 		flat.mainArtist6 = "";
 		flat.mainArtist7 = "";
 	}
+
+	if (package.first.albums) {
+		flat.artistImage11 = package.first.albums[0] ? package.first.albums[0].url : "";
+		flat.artistImage12 = package.first.albums[1] ? package.first.albums[1].url : "";
+	} else {
+		flat.artistImage11 = "";
+		flat.artistImage12 = "";
+	}
+	
+	if (package.second.albums) {
+		flat.artistImage21 = package.second.albums[0] ? package.second.albums[0].url : "";
+		flat.artistImage22 = package.second.albums[1] ? package.second.albums[1].url : "";	
+	} else {
+		flat.artistImage21 = "";
+		flat.artistImage22 = "";
+	}
+	
+	if (package.similar.albums) {
+		flat.mainArtist1 = package.similar.albums[0] ? package.similar.albums[0].url : "";
+		flat.mainArtist2 = package.similar.albums[1] ? package.similar.albums[1].url : "";
+		flat.mainArtist3 = package.similar.albums[2] ? package.similar.albums[2].url : "";
+		flat.mainArtist4 = package.similar.albums[3] ? package.similar.albums[3].url : "";
+		flat.mainArtist5 = package.similar.albums[4] ? package.similar.albums[4].url : "";
+		flat.mainArtist6 = package.similar.albums[5] ? package.similar.albums[5].url : "";
+		flat.mainArtist7 = package.similar.albums[6] ? package.similar.albums[6].url : "";
+	} else {
+		flat.mainArtist1 = "";
+		flat.mainArtist2 = "";
+		flat.mainArtist3 = "";
+		flat.mainArtist4 = "";
+		flat.mainArtist5 = "";
+		flat.mainArtist6 = "";
+		flat.mainArtist7 = "";
+	}
 	
 	return flat;
 };
 
 
-//Calls each function and makes it into a single object
+//Calls each helper function and makes it into a single object called datapackage
 var makePackage = function(data, socket){
 	var dataPackage = {
 		first: {
+			name: data.first,
 			images: [],
 			video: [],
+			albums: [],
 			influencers: []
 		},
 		second: {
+			name: data.second,
 			images: [],
 			video: [],
+			albums: [],
 			influencers: []
 		},
 		similar: {
+			name: '',
 			images: [],
 			video: [],
+			albums: [],
 			influencers: [],
 			song: []
 		}
@@ -205,6 +301,12 @@ var makePackage = function(data, socket){
 			secondImg: function(callback){
 				findPhoto(data.second, callback);
 			},
+			firstAlbumArt: function(callback){
+				findAlbumArt(data.first, callback);
+			},
+			secondAlbumArt: function(callback){
+				findAlbumArt(data.second, callback);
+			},
 			/*firstInflu: function(callback){
 				findInflu(data.first, callback);
 			},
@@ -218,8 +320,15 @@ var makePackage = function(data, socket){
 		function(err, results){
 			dataPackage.first.video.push({'url': results.firstVideo});
 			dataPackage.second.video.push({'url':results.secondVideo});
+
 			dataPackage.first.images = results.firstImg;
 			dataPackage.second.images = results.secondImg;
+
+			dataPackage.first.albums = results.firstAlbumArt;
+			dataPackage.second.albums = results.secondAlbumArt;
+
+			dataPackage.similar.name = results.similar.name;
+
 			/*dataPackage.first.influencers.push({'name':results.firstInflu});
 			dataPackage.second.influencers.push({'name':results.secondInflu});*/
 
@@ -231,6 +340,9 @@ var makePackage = function(data, socket){
 					similarImg: function(callback){
 						findPhoto(results.similar.name, callback);
 					},
+					similarAlbumArt: function(callback){
+						findAlbumArt(results.similar.name, callback);
+					},
 					similarSong: function(callback){
 						findSong(results.similar.name, callback);
 					}
@@ -241,7 +353,9 @@ var makePackage = function(data, socket){
 				function(err,results){
 					dataPackage.similar.video.push({'url': results.similarVideo});
 					dataPackage.similar.images = results.similarImg;
-					dataPackage.similar.influencers.push({'name':results.similarInflu});
+					dataPackage.similar.song = results.similarSong;
+					dataPackage.similar.albums = results.similarAlbumArt;
+					//dataPackage.similar.influencers.push({'name':results.similarInflu});
 
 					console.log(util.inspect(dataPackage));
 					dataPackage.similar.song = results.similarSong;
@@ -257,4 +371,4 @@ var makePackage = function(data, socket){
 };
 
 module.exports.makePackage = makePackage;
-module.exports.findSong = findSong;
+module.exports.findAlbumArt = findAlbumArt;
