@@ -122,13 +122,48 @@ var findSong = function(data){
  * function, return a flattened version
  */
 var flattenPackage = function(package) {
-	var flat = {
-		artistImage11: package.first.images[0].url,
-		artistImage12: package.first.images[1].url,
-		artistImage21: package.second.images[0].url,
-		artistImage22: package.second.images[1].url
-	};
-	return flat
+	
+	var flat = {};
+	
+	/*
+	 * For each section, add the url for the specified image if it exists.
+	 * If it does not exist, add an empty string.
+	 */
+	if (package.first.images) {
+		flat.artistImage11 = package.first.images[0] ? package.first.images[0].url : "";
+		flat.artistImage12 = package.first.images[1] ? package.first.images[1].url : "";
+	} else {
+		flat.artistImage11 = "";
+		flat.artistImage12 = "";
+	}
+	
+	if (package.second.images) {
+		flat.artistImage21 = package.second.images[0] ? package.second.images[0].url : "";
+		flat.artistImage22 = package.second.images[1] ? package.second.images[1].url : "";	
+	} else {
+		flat.artistImage21 = "";
+		flat.artistImage22 = "";
+	}
+	
+	if (package.similar.images) {
+		flat.mainArtist1 = package.similar.images[0] ? package.similar.images[0].url : "";
+		flat.mainArtist2 = package.similar.images[1] ? package.similar.images[1].url : "";
+		flat.mainArtist3 = package.similar.images[2] ? package.similar.images[2].url : "";
+		flat.mainArtist4 = package.similar.images[3] ? package.similar.images[3].url : "";
+		flat.mainArtist5 = package.similar.images[4] ? package.similar.images[4].url : "";
+		flat.mainArtist6 = package.similar.images[5] ? package.similar.images[5].url : "";
+		flat.mainArtist7 = package.similar.images[6] ? package.similar.images[6].url : "";
+	} else {
+		flat.mainArtist1 = "";
+		flat.mainArtist2 = "";
+		flat.mainArtist3 = "";
+		flat.mainArtist4 = "";
+		flat.mainArtist5 = "";
+		flat.mainArtist6 = "";
+		flat.mainArtist7 = "";
+	}
+	
+	return flat;
 };
 
 
@@ -201,9 +236,10 @@ var makePackage = function(data, socket){
 				function(err,results){
 					dataPackage.similar.video.push({'url': results.similarVideo});
 					dataPackage.similar.images = results.similarImg;
+					console.log(util.inspect(results));
 					dataPackage.similar.influencers.push({'name':results.similarInflu});
 
-					console.log(util.inspect(dataPackage));
+					// console.log(util.inspect(dataPackage));
 					
 					var flatPackage = flattenPackage(dataPackage);
 					socket.broadcast.to("AssetShare").emit('flat-package', flatPackage);
