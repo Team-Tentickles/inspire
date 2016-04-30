@@ -23,7 +23,7 @@ var findInflu = function(data, callback){
 	rovi.get("name/influencers", { "name": data}, function (err, res) {
 		if(err){
 			console.error("influence not found");
-			console.log(err);
+			callback(err);
 		}
 		else{
 			callback(null, res.influencers[0].name);

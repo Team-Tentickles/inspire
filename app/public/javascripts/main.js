@@ -23,8 +23,6 @@ inspireApp.main ={
 	timestep: 1000/60,
 	mouseIsDown:false,
 	
-	socketHanlder: SocketHandler(),
-	
 	// VARS
 	gameState:undefined,
 	
@@ -147,6 +145,7 @@ inspireApp.main ={
 	}
 };
 window.onload = function(){
+	window.socketHandler = new SocketHandler();
 	//console.log(local_data.decade);
 	// set artist data
 	inspireApp.main.artistData = local_data;

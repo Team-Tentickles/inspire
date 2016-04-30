@@ -362,7 +362,13 @@ inspireApp.selection ={
                     drops.exit.enabled = false;
 					drops.windowState = this.dropZoneStateLocked;
                     this.artistsSentToSpire ++;
-                    if(this.artistsSentToSpire == 2) inspireApp.main.changeGameState();
+                    if(this.artistsSentToSpire == 2) {
+						inspireApp.main.changeGameState();
+						// console.log(this.dropZones);
+						var artist1 = this.dropZones[0].artist.name;
+						var artist2 = this.dropZones[1].artist.name;
+						socketHandler.submit(artist1, artist2);
+					}
 					// SEND ARTIST TO SPIRE CODE		
 				}
 			}
