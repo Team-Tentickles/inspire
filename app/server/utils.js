@@ -79,7 +79,7 @@ var findVideo = function(data, callback){
 			console.log(err);
 		}
 		else{
-			var oURL = res.response.video[0].url;
+			var oURL = res.response.video[0] ? res.response.video[0].url : "";
 			var nURL = oURL.replace("http://www.dailymotion.com/", "http://www.dailymotion.com/embed/");
 			
 			callback(null, nURL);
@@ -210,6 +210,7 @@ var flattenPackage = function(package) {
 		flat.mainArtist5 = package.similar.images[4] ? package.similar.images[4].url : "";
 		flat.mainArtist6 = package.similar.images[5] ? package.similar.images[5].url : "";
 		flat.mainArtist7 = package.similar.images[6] ? package.similar.images[6].url : "";
+        flat.mainArtist8 = package.similar.images[7] ? package.similar.images[7].url : "";
 	} else {
 		flat.mainArtist1 = "";
 		flat.mainArtist2 = "";
@@ -218,42 +219,46 @@ var flattenPackage = function(package) {
 		flat.mainArtist5 = "";
 		flat.mainArtist6 = "";
 		flat.mainArtist7 = "";
+		flat.mainArtist8 = "";
 	}
 
 	if (package.first.albums) {
-		flat.artistImage11 = package.first.albums[0] ? package.first.albums[0].url : "";
-		flat.artistImage12 = package.first.albums[1] ? package.first.albums[1].url : "";
+		flat.albumImage11 = package.first.albums[0] ? package.first.albums[0].url : "";
+		flat.albumImage12 = package.first.albums[1] ? package.first.albums[1].url : "";
 	} else {
-		flat.artistImage11 = "";
-		flat.artistImage12 = "";
+		flat.albumImage11 = "";
+		flat.albumImage12 = "";
 	}
 	
 	if (package.second.albums) {
-		flat.artistImage21 = package.second.albums[0] ? package.second.albums[0].url : "";
-		flat.artistImage22 = package.second.albums[1] ? package.second.albums[1].url : "";	
+		flat.albumImage21 = package.second.albums[0] ? package.second.albums[0].url : "";
+		flat.albumImage22 = package.second.albums[1] ? package.second.albums[1].url : "";	
 	} else {
-		flat.artistImage21 = "";
-		flat.artistImage22 = "";
+		flat.albumImage21 = "";
+		flat.albumImage22 = "";
 	}
 	
 	if (package.similar.albums) {
-		flat.mainArtist1 = package.similar.albums[0] ? package.similar.albums[0].url : "";
-		flat.mainArtist2 = package.similar.albums[1] ? package.similar.albums[1].url : "";
-		flat.mainArtist3 = package.similar.albums[2] ? package.similar.albums[2].url : "";
-		flat.mainArtist4 = package.similar.albums[3] ? package.similar.albums[3].url : "";
-		flat.mainArtist5 = package.similar.albums[4] ? package.similar.albums[4].url : "";
-		flat.mainArtist6 = package.similar.albums[5] ? package.similar.albums[5].url : "";
-		flat.mainArtist7 = package.similar.albums[6] ? package.similar.albums[6].url : "";
+		flat.mainAlbum1 = package.similar.albums[0] ? package.similar.albums[0].url : "";
+		flat.mainAlbum2 = package.similar.albums[1] ? package.similar.albums[1].url : "";
+		flat.mainAlbum3 = package.similar.albums[2] ? package.similar.albums[2].url : "";
+		flat.mainAlbum4 = package.similar.albums[3] ? package.similar.albums[3].url : "";
+		flat.mainAlbum5 = package.similar.albums[4] ? package.similar.albums[4].url : "";
+		flat.mainAlbum6 = package.similar.albums[5] ? package.similar.albums[5].url : "";
+		flat.mainAlbum7 = package.similar.albums[6] ? package.similar.albums[6].url : "";
+        flat.mainAlbum8 = package.similar.albums[7] ? package.similar.albums[7].url : "";
 	} else {
-		flat.mainArtist1 = "";
-		flat.mainArtist2 = "";
-		flat.mainArtist3 = "";
-		flat.mainArtist4 = "";
-		flat.mainArtist5 = "";
-		flat.mainArtist6 = "";
-		flat.mainArtist7 = "";
+		flat.mainAlbum1 = "";
+		flat.mainAlbum2 = "";
+		flat.mainAlbum3 = "";
+		flat.mainAlbum4 = "";
+		flat.mainAlbum5 = "";
+		flat.mainAlbum6 = "";
+		flat.mainAlbum7 = "";
+        flat.mainAlbum8 = "";
 	}
 	
+    console.log(util.inspect(flat));
 	return flat;
 };
 
@@ -357,7 +362,7 @@ var makePackage = function(data, socket){
 					dataPackage.similar.albums = results.similarAlbumArt;
 					//dataPackage.similar.influencers.push({'name':results.similarInflu});
 
-					console.log(util.inspect(dataPackage));
+//					console.log(util.inspect(dataPackage));
 					dataPackage.similar.song = results.similarSong;
 					
 					var flatPackage = flattenPackage(dataPackage);
