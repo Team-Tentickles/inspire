@@ -12,6 +12,11 @@ io.sockets.on("connection", function(socket) {
 		utils.makePackage(data, socket);
 		//utils.findAlbumArt(data.first);
 	});
+    
+    socket.on('fromSpire', function(data) {
+        console.log(data);
+        socket.broadcast.to('AssetShare').emit("fromSpire", data);
+    });
 });
 
 module.exports = io;

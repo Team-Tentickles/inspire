@@ -48,6 +48,10 @@ var init = function(){
 var SocketHandler = function () {
     var socket = io.connect();
     
+    socket.on('fromSpire', function (data) {
+        console.log(data);
+    });
+    
     var submit = function (artist1, artist2) {
         socket.emit('serverArtist', {
             first: artist1, 
