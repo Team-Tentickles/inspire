@@ -155,14 +155,14 @@ window.onload = function(){
 	// Preload artist images
 	inspireApp.main.preloadImages(inspireApp.main.artistData);
 	// // event Listeners
-	// this.canvas.addEventListener("mousedown", function(){inspireApp.main.clickFunctions();inspireApp.main.mouseIsDown = true}, false);
-	// this.canvas.addEventListener("mouseup", function(){inspireApp.main.mouseIsDown = false}, false);
-	// this.canvas.addEventListener("mouseout", function(){inspireApp.main.mouseIsDown = false}, false);
-	// this.canvas.addEventListener("mousemove", inspireApp.main.getMouse,false);
-	this.canvas.addEventListener("pointerdown", function(){inspireApp.main.clickFunctions();inspireApp.main.mouseIsDown = true}, false);
-	this.canvas.addEventListener("pointerup", function(){inspireApp.main.mouseIsDown = false}, false);
-	this.canvas.addEventListener("pointerout", function(){inspireApp.main.mouseIsDown = false}, false);
-	this.canvas.addEventListener("pointermove", inspireApp.main.getMouse,false);
+	this.canvas.addEventListener("mousedown", function(){inspireApp.main.clickFunctions();inspireApp.main.mouseIsDown = true}, false);
+	this.canvas.addEventListener("mouseup", function(){inspireApp.main.mouseIsDown = false}, false);
+	this.canvas.addEventListener("mouseout", function(){inspireApp.main.mouseIsDown = false}, false);
+	this.canvas.addEventListener("mousemove", inspireApp.main.getMouse,false);
+	// this.canvas.addEventListener("pointerdown", function(){inspireApp.main.clickFunctions();inspireApp.main.mouseIsDown = true}, false);
+	// this.canvas.addEventListener("pointerup", function(){inspireApp.main.mouseIsDown = false}, false);
+	// this.canvas.addEventListener("pointerout", function(){inspireApp.main.mouseIsDown = false}, false);
+	// this.canvas.addEventListener("pointermove", inspireApp.main.getMouse,false);
 	// initialize app
 	//inspireApp.main.ready();
 }
