@@ -14,9 +14,9 @@ inspireApp.main ={
 	canvas:undefined,
 	ctx:undefined,
 	artistData:undefined,
-	uiFont: {font: "Brandon_light", size: 36, color: "black", weight: "normal", align: "center"},
+	uiFont: {font: "Brandon_light", size: 36, color: "white", weight: "normal", align: "center"},
 	decadeCircleImages: ["assets/50s.png", "assets/60s.png", "assets/70s.png", "assets/80s.png", "assets/90s.png", "assets/00s.png"],
-	totalAssets: 8, // # of assets to be loaded 
+	totalAssets: 9, // # of assets to be loaded 
 	// VARS
 	mouse:{},
 	mouseIsDown:false,
@@ -50,10 +50,11 @@ inspireApp.main ={
 		requestAnimationFrame(this.draw.bind(this));
 		
 		// background
-		ctx.save();
-		ctx.fillStyle="white";
-		ctx.fillRect(0,0,app.CANVAS_WIDTH,app.CANVAS_HEIGHT);
-		ctx.restore();
+		//ctx.save();
+		//ctx.fillStyle="white";
+		//ctx.fillRect(0,0,app.CANVAS_WIDTH,app.CANVAS_HEIGHT);
+		//ctx.restore();
+		ctx.clearRect(0,0,this.CANVAS_WIDTH,this.CANVAS_HEIGHT);
 		// game functions
 		this.checkMouseDown();
 		inspireApp.start.draw();
@@ -147,6 +148,12 @@ inspireApp.main ={
 			inspireApp.selection.greyButton = greyButton;
 			assetLoadPost();
 		}
+		var artistCircle = new Image();
+		artistCircle.src = "assets/pinkBullet.png";
+		artistCircle.onload = function(){
+			inspireApp.selection.artistCircleImages = artistCircle;
+			assetLoadPost();
+		}
 		for(var i = 0; i < this.decadeCircleImages.length; i++){
 			newImages[i] = new Image();
 			newImages[i].src = this.decadeCircleImages[i];
@@ -208,17 +215,17 @@ inspireApp.main ={
 		return newImages;
 	},
 	touchDown:function(){
-		inspireApp.main.mouseIsDown = true;
+		//inspireApp.main.mouseIsDown = true;
 		inspireApp.main.touchXY();
 		inspireApp.main.clickFunctions();
 	},
 	touchUp:function(e){
 		if (!e)
         e = event;
-		inspireApp.selection.checkDropZones();
 
+		inspireApp.selection.checkDropZones();
         inspireApp.main.len = e.targetTouches.length;
-		inspireApp.main.mouseIsDown = false;
+		//inspireApp.main.mouseIsDown = false;
 	},
 	touchXY:function(e) {
         if (!e)
