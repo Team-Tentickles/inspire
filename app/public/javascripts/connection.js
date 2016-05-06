@@ -7,6 +7,9 @@ inspireApp.connection ={
 	// Artist Card Vars
 	artistCards: undefined,
 	artistCardsCenter: [], // Artist Cards center coordinates
+	artistCardsTranslateX: 70,
+	artistCardsTranslateXspeed: 5,
+	artistCardsCenterAnimation: undefined,
 	artistCardsAnimation: undefined, // Animation object for Artist Cards
 	artistImagesAnimation: undefined, // Animation object for Artist Images
 	artistButtonAnimation: undefined, // Animation object for Buttons
@@ -38,8 +41,18 @@ inspireApp.connection ={
 			var artistImages = this.artistCards.artistImages[i];
 			var button = this.artistCards.button[i];
 			var artistNames = this.artistCards.artistNames[i];
+			var center = {};
+			center.x = this.artistCards.dimensions[i].x + card.w/2;
+			center.y = this.artistCards.dimensions[i].y + card.h/2;
+			//console.log(center);
+			//var center;
+			//center[i] = {x: card.x + card.w/2, y: card.y + card.h/2};
+			//var center = {x: card.x + card.w/2, y: card.y + card.h/2};
 			if(this.screenState == this.SCREEN_STATE_ROCK){
-				this.artistCardsCenter[i] = {x: card.x + card.w/2, y: card.y + card.h/2};
+				//this.artistCardsCenter[i] = {x: card.x + card.w/2, y: card.y + card.h/2};
+				//this.artistCardsCenter[0] = {x: center.x, newX: center.x + this.artistCardsTranslateX, speed:this.artistCardsTranslateXspeed, grow: true};
+				//this.artistCardsCenter[1] = {x: center.x, newX: center.x - this.artistCardsTranslateX, speed:this.artistCardsTranslateXspeed, grow: false};
+				
 				this.artistCardsAnimation = {minWidth: card.w*this.newSize, minHeight: card.h*this.newSize, decW: (card.w-(card.w*this.newSize))/this.animationTime, decH: (card.h-(card.h*this.newSize))/this.animationTime};
 				
 				this.artistImagesAnimation = {minWidth: artistImages.w*this.newSize, minHeight: artistImages.h*this.newSize, decW: (artistImages.w-(artistImages.w*this.newSize))/this.animationTime, decH: (artistImages.h-(artistImages.h*this.newSize))/this.animationTime};
@@ -49,25 +62,30 @@ inspireApp.connection ={
 				this.artistNameAnimation = {minSize: artistNames.font.size*this.newSize, decSize: (artistNames.font.size-(artistNames.font.size*this.newSize))/this.animationTime};
 			}
 			if(this.screenState == this.SCREEN_STATE_CONNECTION){
-				var cardCenter = this.artistCardsCenter[i];
+				var cardCenter = this.artistCardsCenter;
 				var animateCard = this.artistCardsAnimation;
 				var animateImage = this.artistImagesAnimation;
 				var animateButton = this.artistButtonAnimation;
 				var animateName = this.artistNameAnimation;
-				// Animate		
+				// Animate
+				//console.log(center + ", "+ cardCenter);
+				//console.log(cardCenter[i]);
+				//center.x = inspireApp.selection.animate(center.x, cardCenter[i].newX, cardCenter[i].grow, cardCenter[i].speed);
+				
+				
 				card.w = inspireApp.selection.animate(card.w, animateCard.minWidth, false, animateCard.decW);
 				card.h = inspireApp.selection.animate(card.h, animateCard.minHeight, false, animateCard.decH);
-				card.x = cardCenter.x - card.w/2;
-				card.y = cardCenter.y - card.h/2;
+				card.x = center.x - card.w/2;
+				card.y = center.y - card.h/2;
 				
 				artistImages.w = inspireApp.selection.animate(artistImages.w, animateImage.minWidth, false, animateImage.decW);
 				artistImages.h = inspireApp.selection.animate(artistImages.h, animateImage.minHeight, false, animateImage.decH);
-				artistImages.x = cardCenter.x - artistImages.w/2;
+				artistImages.x = center.x - artistImages.w/2;
 				artistImages.y = card.y;
 				
 				button.w = inspireApp.selection.animate(button.w, animateButton.minWidth, false, animateButton.decW);
 				button.h = inspireApp.selection.animate(button.h, animateButton.minHeight, false, animateButton.decH);
-				button.x = cardCenter.x - button.w/2;
+				button.x = center.x - button.w/2;
 				button.y = card.y + artistImages.h;
 				
 				artistNames.font.size = inspireApp.selection.animate(artistNames.font.size, animateName.minSize, false, animateName.decSize);
@@ -76,7 +94,7 @@ inspireApp.connection ={
 			
 			// ARTIST CARD
 			ctx.save();
-				//ctx.strokeStyle = 'rgba(0,0,0,0)';
+			ctx.strokeStyle = 'rgba(0,0,0,0)';
 			inspireApp.selection.roundRect(card.x, card.y, card.br, card.w, card.h);
 			ctx.clip();
 			

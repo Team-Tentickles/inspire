@@ -21,7 +21,8 @@ inspireApp.selection ={
 	// artist circle vars
 	artistCirclesRadius:10, // radius of artist circles
 	artistCircleTextPadding:18,
-	artistCircleFont: {font: "Brandon_light", size: 16, color: "black", weight: "normal"},
+	artistCircleImages: undefined,
+	artistCircleFont: {font: "Brandon_light", size: 16, color: "white", weight: "normal"},
 	artistUIradius:20, // distance from decadeCircles
 	artistUIradians:(Math.PI)/1.8,
 	artistImages:undefined, // Array of preloaded & resized artist images
@@ -59,6 +60,7 @@ inspireApp.selection ={
 	dropZoneButtonFont: {font: "Brandon_bld", size: 18, color: "white", weight: "bold", align: "center"},
 	dropZoneBackButtonFont: {font: "Brandon_med", size: 18, color: "#acabab", weight: "normal", align: "center"},
 	dropZoneContentColor:"white",
+	dropZoneUnoccupiedFont: {font: "Brandon_light", size: 30, color: "black", weight: "normal", align: "center"},
 	// Assets
 	purpleButton:undefined,
 	greyButton:undefined,
@@ -160,6 +162,7 @@ inspireApp.selection ={
 				artistCircle.radius = this.artistCirclesRadius;
 				artistCircle.lastX = artistCircle.x;
 				artistCircle.lastY = artistCircle.y;
+				artistCircle.circleImage = this.artistCircleImages;
 				artistCircle.info = artists.decade[i].artistsArray[j];
 				artistCircle.images = this.artistImages[imageIndex];
 				artistCircle.textStyle = textStyle;
@@ -179,10 +182,11 @@ inspireApp.selection ={
 					var stroke = "black";
 					ctx.save();
 					if(circle.used) stroke="gray";
-					ctx.strokeStyle = stroke;
+					ctx.drawImage(circle.circleImage, circle.x - circle.radius, circle.y - circle.radius, circle.radius*2, circle.radius*2);
+					/*ctx.strokeStyle = stroke;
 					ctx.beginPath();
 					ctx.arc(circle.x, circle.y, circle.radius, 0, 2*Math.PI);
-					ctx.stroke();
+					ctx.stroke();*/
 					this.drawText(circle.info.name, circle.x + circle.textStyle.padding, circle.y, this.artistCircleFont.weight, this.artistCircleFont.size, this.artistCircleFont.color, this.artistCircleFont.font, circle.textStyle.align);
 					ctx.restore();
 				}					
@@ -201,6 +205,7 @@ inspireApp.selection ={
 			drops.w = this.dropZoneDimensions.w;
 			drops.h = this.dropZoneDimensions.h;
 			drops.br = this.dropZoneBorderRad;
+			drops.font = this.dropZoneUnoccupiedFont;
 			drops.occupied = false;
 			drops.artist = "";
 			drops.content = {
@@ -280,7 +285,7 @@ inspireApp.selection ={
 				var y = topLeft.y;
 				  
 				ctx.save();
-				//ctx.strokeStyle = 'rgba(0,0,0,0)';
+				ctx.strokeStyle = 'rgba(0,0,0,0)';
 				
 				// Artist Card Shape
 				this.roundRect(topLeft.x, topLeft.y, drops.br, drops.w, drops.h + drops.button[0].h);
@@ -381,7 +386,7 @@ inspireApp.selection ={
 				// Hide Artist Bio
 				$(bio).css("visibility", "hidden");
 				// Draw Drop Circle
-				this.drawText("DROP", drops.x, drops.y, "normal", 30, "black", "Arial", "center");
+				this.drawText("DROP", drops.x, drops.y, drops.font.weight, drops.font.size, drops.font.color, drops.font.font, drops.font.align);
 				ctx.beginPath();
 				ctx.arc(drops.x, drops.y, drops.radius, 0, 2*Math.PI);
 				ctx.stroke();
@@ -495,7 +500,7 @@ inspireApp.selection ={
 						}
 					}
 					else if(!drops.occupied){
-					console.log(artist);
+					//console.log(artist);
 						if(this.pointInsideCircle(artist.x, artist.y, drops.x, drops.y, drops.radius)){
 							inspireApp.selection.checkArtists(artist);
 							drops.windowState = this.dropZoneStateSelect;
