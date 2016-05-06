@@ -42,7 +42,8 @@ var findSimilar = function(data, callback){
 			console.log(err);
 		}
 		else{
-			callback(null, res.response.artists[0]);
+			console.log(res.response.artists[1]);
+			callback(null, res.response.artists[1]);
 		}
 	});
 	
@@ -90,35 +91,39 @@ var findVideo = function(data, callback){
 
 //Helper function to turn names into spotify IDs
 var findArtistId = function(data, callback){
-	console.log(data);
-	spotify.searchArtists(data, {type: 'artist'}, function(err, data){
+	spotify.searchArtists(data, {type: 'artist'}, function(err, res){
 		if (err){
 			console.log ('ID Error: ' + err);
 		}
 		else{
-			console.log(data.body.artists.items[0].id);
-			callback(null, data.body.artists.items[0].id);
+			callback(null, res.body.artists.items[0].id);
 		}
 	});
 }
 
 //Find artist album art using spotify
 var findAlbumArt = function(data, callback){
-	findArtistId(data, function(err,data){
+	findArtistId(data, function(err,res){
 		if(err){
 			console.log('ID Error: ' + err)
 		}
 		else{
-			console.log(data);
-			spotify.getArtistAlbums(data, 'US', function(err, data){
+			spotify.getArtistAlbums(res, 'US', function(err, res){
 				if(err){
 					console.log('Album Error: ' + err);
 				}
 				else{
-					var imgArray = data.body.items.map(function (img) {
-						return {'url': img.images[0].url}
+					console.log("Album art found for " + data);
+					console.log(res.body.items[0].images);
+					var imgArray = res.body.items.map(function (img) {
+						if(img.images[0]){
+							return {'url': img.images[0].url}
+						}
+						else{
+							return {'url' : ''}
+						}
 					});
-
+					console.log(imgArray);
 					callback(null, imgArray);				
 				}
 			});
@@ -128,25 +133,23 @@ var findAlbumArt = function(data, callback){
 
 //Finds song for artist  using Spotify
 var findSong = function(data, callback){
-	console.log(data);
-	findArtistId(data, function(err, data){
+	findArtistId(data, function(err, res){
 		if (err){
 			console.log('ID Error: ' + err);
 		}
 		else{
-			spotify.getArtistTopTracks(data, 'US', function(err, data){
+			spotify.getArtistTopTracks(res, 'US', function(err, res){
 				if (err){
 					console.log('Song Error: ' + err);
 				}
 				else{
-					//console.log(data.body.tracks[0].name);
-					spotify.getTrack(data.body.tracks[0].id, function(err, data){
+					spotify.getTrack(res.body.tracks[0].id, function(err, res){
 						if (err){
 							console.log('Song Error: ' + err);
 						}
 						else{
-							console.log(data.body.preview_url);
-							callback(null, data.body.preview_url);
+							console.log("Song found for " + data);
+							callback(null, res.body.preview_url);
 						}
 					});
 				}
@@ -323,6 +326,10 @@ var makePackage = function(data, socket){
 			}
 		},
 		function(err, results){
+			if (err){
+				console.log('First Sync Error: ' + err);
+			}
+			console.log("First async succeeded");
 			dataPackage.first.video.push({'url': results.firstVideo});
 			dataPackage.second.video.push({'url':results.secondVideo});
 
@@ -356,13 +363,16 @@ var makePackage = function(data, socket){
 					}*/
 				},
 				function(err,results){
+					if (err){
+						console.log('Second Sync Error: ' + err);
+					}
+					console.log("Second Async succeeded");
 					dataPackage.similar.video.push({'url': results.similarVideo});
 					dataPackage.similar.images = results.similarImg;
 					dataPackage.similar.song = results.similarSong;
 					dataPackage.similar.albums = results.similarAlbumArt;
 					//dataPackage.similar.influencers.push({'name':results.similarInflu});
 
-//					console.log(util.inspect(dataPackage));
 					dataPackage.similar.song = results.similarSong;
 					
 					var flatPackage = flattenPackage(dataPackage);
