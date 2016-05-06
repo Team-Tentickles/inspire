@@ -433,6 +433,7 @@ inspireApp.selection ={
 						// store button images in object	
 						var artistCards = {dimensions: this.dropZoneArtistCards, artistImages: this.dropZoneArtistImages, artistNames: this.dropZoneArtistNames, button: this.dropZoneArtistButton};
 						console.log(artistCards);
+						socketHandler.submit(artistCards.artistNames[0].name, artistCards.artistNames[1].name);
 						inspireApp.connection.artistCards = artistCards;
 						inspireApp.connection.screenState = inspireApp.connection.SCREEN_STATE_ROCK;
 						// Change game state to Connection State

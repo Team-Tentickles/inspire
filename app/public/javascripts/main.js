@@ -1,3 +1,4 @@
+
 // INSPIRE CANVAS APP
 "use strict"
 var inspireApp = inspireApp || {};
@@ -258,7 +259,12 @@ window.onload = function(){
     this.canvas.addEventListener("touchend", inspireApp.main.touchUp, false);
     this.canvas.addEventListener("touchmove", inspireApp.main.touchXY, false);
 	window.addEventListener("mousemove", inspireApp.main.mouseXY,false);
+	
+	window.socketHandler = SocketHandler();
+	socketHandler.setSimilarHandler(function(data) {
+		console.log(data);
+		console.log("received: " + data.name);
+	});
 	// initialize app
 	//inspireApp.main.ready();
 }
-
