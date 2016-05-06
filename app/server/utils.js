@@ -379,6 +379,13 @@ var makePackage = function(data, socket){
 					socket.broadcast.to("AssetShare").emit('flat-package', flatPackage);
 					socket.broadcast.to("AssetShare").emit('package', dataPackage);
 					socket.emit('package', dataPackage);
+					
+					// similar event
+					var similarPackage = {
+						name: dataPackage.similar.name,
+						image: dataPackage.similar.images[0]
+					};
+					socket.emit('similarArtist', similarPackage);
 				}
 			);
 		}
