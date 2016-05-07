@@ -11,7 +11,7 @@ inspireApp.selection ={
 	uiFont: inspireApp.main.uiFont,
 	draggedArtists:[],
 	// Center of decades ui
-	decadesUIradius:250,
+	decadesUIradius:260,
 	// array of decadeCircle objects
 	decadeCircles:[],
 	decadeCircleAnimate:4,
@@ -28,9 +28,10 @@ inspireApp.selection ={
 	artistImages:undefined, // Array of preloaded & resized artist images
 	// Drag and Drop Circles
 	dropZones:[],
-	dropZoneRadius:150,
+	dropZoneRadius:200,
 	dropZonePadding:80, // padding between drop zones and edge of viewport
 	dropZoneBorderRad:20, // Border radius of rectange when occupied with artist
+	dropZoneExitCircleImage: undefined,
 	// Artist Panel Vars
 	dropZoneStateSelect:0,
 	dropZoneStateConfirm:1,
@@ -41,7 +42,7 @@ inspireApp.selection ={
 	dropZoneArtistButton: [], // Store button properties (passed on to connection)
 	dropZoneDimensions:{w:380, h:480},
 	dropZoneExitPadding:50, // Exit button padding from artist pannel when drop zone is occupied
-	dropZoneExitRadius:20, // Size of exit button
+	dropZoneExitRadius:30, // Size of exit button
 	dropZoneContentPadding:25,
 	dropZoneContentHeight:.7, // percent of Artist Card Height
 	dropZoneContentNameHeight:.20, // percent of Content Height
@@ -60,7 +61,7 @@ inspireApp.selection ={
 	dropZoneButtonFont: {font: "Brandon_bld", size: 18, color: "white", weight: "bold", align: "center"},
 	dropZoneBackButtonFont: {font: "Brandon_med", size: 18, color: "#acabab", weight: "normal", align: "center"},
 	dropZoneContentColor:"white",
-	dropZoneUnoccupiedFont: {font: "Brandon_light", size: 30, color: "black", weight: "normal", align: "center"},
+	dropZoneUnoccupiedFont: {font: "Brandon_light", size: 30, color: "white", weight: "normal", align: "center"},
 	// Assets
 	purpleButton:undefined,
 	greyButton:undefined,
@@ -79,19 +80,20 @@ inspireApp.selection ={
 		inspireApp.selection.createArtistUI(artists);
 		inspireApp.selection.createDropZones();
 	},
-	draw:function(){
+	draw:function(mouse,mouseIsDown){
 		var app = inspireApp.main;
 		if(app.gameState == app.GAME_STATE_SELECTION){
 			// draw selection screen
+			var message = this.displayMessage();
 			ctx.save();
-			this.drawText("SELECT A DECADE", canvas.width/2, canvas.height/2, this.uiFont.weight, this.uiFont.size, this.uiFont.color, this.uiFont.font, this.uiFont.align);
+			this.drawText(message, canvas.width/2, canvas.height/2, this.uiFont.weight, this.uiFont.size, this.uiFont.color, this.uiFont.font, this.uiFont.align);
 			ctx.restore();
 			this.drawDropZones();
 			this.drawDecadeCircles();
 			this.drawArtistCircles();
 			// update functions
 			
-			this.drag();
+			this.drag(mouse,mouseIsDown);
 			
 		}
 	},
@@ -199,7 +201,7 @@ inspireApp.selection ={
 		this.dropZones.push(dropA, dropB);
 		for(var i = 0; i < this.dropZones.length; i++){
 			var drops = this.dropZones[i];
-			drops.y = this.canvasCenterY;
+			drops.y = this.canvasCenterY - this.dropZoneButtonHeight/2;
 			drops.radius = this.dropZoneRadius;
 			drops.windowState = this.dropZoneStateSelect;
 			drops.w = this.dropZoneDimensions.w;
@@ -253,9 +255,22 @@ inspireApp.selection ={
 			
 			// Buttons
 			// Exit
-			drops.exit = {x: drops.x, y: drops.y - (drops.h/2 + this.dropZoneExitPadding), radius: this.dropZoneExitRadius, enabled:false};
-			// Artist Card Button
-			
+			drops.exit = {x: drops.x, y: drops.y - (drops.h/2 + this.dropZoneExitPadding), radius: this.dropZoneExitRadius, image: this.dropZoneExitCircleImage, enabled:false};
+		
+			// Drop Zone
+			var dropZoneImg = document.createElement("img");
+			$(dropZoneImg).offset({top: drops.y - drops.radius + this.dropZoneButtonHeight/2, left: drops.x - drops.radius});
+			dropZoneImg.style.width = drops.radius*2 + "px";
+			dropZoneImg.style.height = drops.radius*2 + "px";
+			//dropZoneImg.style.backgroundImage = "url('assets/DragArtist1.gif')";
+			dropZoneImg.style.backgroundSize = "contain";
+			$(dropZoneImg).attr("id","dropZones"+i);
+			$(dropZoneImg).attr("src", "assets/DragArtist1.gif");
+			$(dropZoneImg).attr("draggable", "false");
+			//$(".dropZones").css( "visibility", "visible" );
+			//$(".dropZones").css( "background-size", "contain" );
+			document.body.appendChild(dropZoneImg);
+			console.log(dropZoneImg);
 			// Artist Bio
 			var bioFont = drops.content.artistBio.font;
 			var bio = document.createElement("div");
@@ -270,15 +285,15 @@ inspireApp.selection ={
 			document.body.appendChild(bio);
 		}
 	},
-	drawDropZones:function(){
-	
+	drawDropZones:function(){	
 		ctx.save();
 		ctx.textBaseline = "middle";		
 		for(var i = 0; i < this.dropZones.length; i++){
 			var drops = this.dropZones[i];
 			var bio = "#div"+i; // ID of each Artist Card Bio div
+			var img = "#dropZones"+i;
 			if(drops.occupied){
-				
+				$(img).css( "visibility", "hidden" );
 				// ARTIST CARD		
 				var topLeft = {x:drops.x - drops.w/2, y:drops.y - drops.h/2}; // Top left corner coords of artist card
 				var overWidth = (drops.artistImage.width - drops.w)/2; // Centers image if width is larger than card
@@ -376,29 +391,34 @@ inspireApp.selection ={
 				
 				// Exit Button
                 if(drops.exit.enabled){
+					ctx.drawImage(this.dropZoneExitCircleImage, drops.exit.x - drops.exit.radius, drops.exit.y - drops.exit.radius, drops.exit.radius*2, drops.exit.radius*2);
+					/*
                     ctx.beginPath();
                     ctx.arc(drops.exit.x, drops.exit.y, drops.exit.radius, 0, 2*Math.PI);
                     ctx.stroke();
                     this.drawText("X",drops.exit.x, drops.exit.y, "normal",  20, "black", "Arial", "center");
+					*/
                 }
 			}
 			if(!drops.occupied){
 				// Hide Artist Bio
 				$(bio).css("visibility", "hidden");
+				$(img).css( "visibility", "visible" );
 				// Draw Drop Circle
-				this.drawText("DROP", drops.x, drops.y, drops.font.weight, drops.font.size, drops.font.color, drops.font.font, drops.font.align);
-				ctx.beginPath();
-				ctx.arc(drops.x, drops.y, drops.radius, 0, 2*Math.PI);
-				ctx.stroke();
+				var y = drops.y + this.dropZoneButtonHeight/2;
+				this.drawText("DROP", drops.x, y, drops.font.weight, drops.font.size, drops.font.color, drops.font.font, drops.font.align);
+				/*ctx.beginPath();
+				ctx.arc(drops.x, y, drops.radius, 0, 2*Math.PI);
+				ctx.stroke();*/
 			}	
 		}
 		ctx.restore();
 	},
-	checkClicks:function(x,y){
+	checkClicks:function(mouse){
 		// decade circles
 		for(var i = 0; i < this.totalDecades; i++){
 			var decadeCircle = this.decadeCircles[i];
-			if(this.pointInsideCircle(x, y, decadeCircle.x, decadeCircle.y, decadeCircle.radius)){
+			if(this.pointInsideCircle(mouse.x, mouse.y, decadeCircle.x, decadeCircle.y, decadeCircle.radius)){
 				// if clicked do ....
 				if(decadeCircle.selected){
 					decadeCircle.selected = false;
@@ -412,7 +432,7 @@ inspireApp.selection ={
 			var drops = this.dropZones[j];
 			// Exit Button
             if(drops.exit.enabled){
-                if(this.pointInsideCircle(x, y, drops.exit.x, drops.exit.y, drops.exit.radius)){
+                if(this.pointInsideCircle(mouse.x, mouse.y, drops.exit.x, drops.exit.y, drops.exit.radius)){
                     inspireApp.selection.checkArtists(undefined, drops.artist);
                     drops.exit.enabled = false;
                     drops.occupied = false;
@@ -421,7 +441,7 @@ inspireApp.selection ={
             }
 			// Select & Confirm Button
 			var b = drops.button[0];
-			if(this.pointInsideRect(b.x, b.y, b.w, b.h, x, y)){
+			if(this.pointInsideRect(b.x, b.y, b.w, b.h, mouse.x, mouse.y)){
 				if(drops.windowState == this.dropZoneStateSelect){
 					drops.windowState = this.dropZoneStateConfirm;
 				}else if(drops.windowState == this.dropZoneStateConfirm){
@@ -443,44 +463,42 @@ inspireApp.selection ={
 			}
 
             var b = drops.button[1];
-            if(this.pointInsideRect(b.x, b.y, b.w, b.h, x, y)){
+            if(this.pointInsideRect(b.x, b.y, b.w, b.h, mouse.x, mouse.y)){
                 drops.windowState = this.dropZoneStateSelect;
             }
 		}
 		
-		this.lastClick = {x: x, y: y}; // keep track of coords where the mouse was last clicked
+		this.lastClick = {x: mouse.x, y: mouse.y}; // keep track of coords where the mouse was last clicked
 	},
-	drag:function(){
+	drag:function(mouse,mouseIsDown){
+	
 			for(var i = 0; i < this.decadeCircles.length; i++){
 				var decadeCircle = this.decadeCircles[i];
 				if(decadeCircle.selected){
 					for(var j = 0; j < decadeCircle.artists.length; j++){
 						var artistCircle = decadeCircle.artists[j];
 						if(!artistCircle.used){
-							if(this.pointInsideCircle(this.lastClick.x, this.lastClick.y, artistCircle.lastX, artistCircle.lastY, artistCircle.radius)){
-								for(var k = 0; k < inspireApp.main.len; k++){
-									artistCircle.x = inspireApp.main.canX[k];
-									artistCircle.y = inspireApp.main.canY[k];
-									this.draggedArtists[k] = artistCircle;
-									
-								}
-							}/*
-							else if(!inspireApp.main.mouseIsDown){
+							if(this.pointInsideCircle(this.lastClick.x, this.lastClick.y, artistCircle.lastX, artistCircle.lastY, artistCircle.radius) && mouseIsDown){
+								console.log("true");
+									artistCircle.x = mouse.x;
+									artistCircle.y = mouse.y;
+							}
+							else if(!mouseIsDown){
 								// Check to see if artist circle is in drop zone
 								inspireApp.selection.checkDropZones(artistCircle);	
 								// Else return to original location
 								artistCircle.x = artistCircle.lastX;
 								artistCircle.y = artistCircle.lastY;		
-							}*/
+							}
 						}
 					}
 				}
 			}
 	},
-		checkDropZones:function(){
+		checkDropZones:function(artist){
 			//console.log(this.draggedArtists);
-			for(var j = 0; j < this.draggedArtists.length; j++){
-				var artist  = this.draggedArtists[j];
+			//for(var j = 0; j < this.draggedArtists.length; j++){
+			//	var artist  = this.draggedArtists[j];
 				
 				for(var i = 0; i < this.dropZones.length; i++){
 					var drops = this.dropZones[i];
@@ -513,8 +531,8 @@ inspireApp.selection ={
 						}
 					}
 				}
-				this.returnArtist(artist);
-			}
+			//	this.returnArtist(artist);
+			//}
 		},
 		checkArtists:function(artist, lastArtist){
 			for(var i = 0; i < this.decadeCircles.length; i++){
@@ -533,6 +551,7 @@ inspireApp.selection ={
 				}
 			}
 		},
+		/*
 	returnArtist:function(artist){
 		for(var i = 0; i < this.decadeCircles.length; i++){
 			for(var j = 0; j < this.decadeCircles[i].artists.length; j++){
@@ -543,6 +562,26 @@ inspireApp.selection ={
 				}
 			}
 		}
+	},*/
+	displayMessage:function(){
+		var message;
+		for(var i = 0; i < this.decadeCircles.length; i++){
+			var decade = this.decadeCircles[i];
+			if(decade.selected){
+				message = "DRAG ARTIST TO VIEW";
+				return message;
+			}
+			/*else{
+				message = "SELECT A DECADE";
+				return message;
+			}*/
+			
+			//for(var j = 0; j < this.decadeCircles[i].artists.length; j++){
+			//	var a = this.decadeCircles[i].artists[j];
+			//}
+		}
+		message = "SELECT A DECADE";
+		return message;
 	},
 	animate:function(ov, nv, grow, inc){
 		if(grow){

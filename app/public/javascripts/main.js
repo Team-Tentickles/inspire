@@ -10,6 +10,7 @@ inspireApp.main ={
 	GAME_STATE_START:0,
 	GAME_STATE_SELECTION:1,
 	GAME_STATE_CONNECTION:2,
+	GAME_STATE_THANKS:3,
 	//GAME_STATE_EXPLORE:3,
 	//GAME_STATE_END:4,
 	canvas:undefined,
@@ -17,7 +18,7 @@ inspireApp.main ={
 	artistData:undefined,
 	uiFont: {font: "Brandon_light", size: 36, color: "white", weight: "normal", align: "center"},
 	decadeCircleImages: ["assets/50s.png", "assets/60s.png", "assets/70s.png", "assets/80s.png", "assets/90s.png", "assets/00s.png"],
-	totalAssets: 9, // # of assets to be loaded 
+	totalAssets: 10, // # of assets to be loaded 
 	// VARS
 	mouse:{},
 	mouseIsDown:false,
@@ -59,21 +60,22 @@ inspireApp.main ={
 		// game functions
 		this.checkMouseDown();
 		inspireApp.start.draw();
-		inspireApp.selection.draw();
+		inspireApp.selection.draw(app.mouse, app.mouseIsDown);
 		inspireApp.connection.draw();	
 	},
 
 	changeGameState:function(){
 		if (this.gameState == this.GAME_STATE_START) this.gameState = this.GAME_STATE_SELECTION;
 		else if(this.gameState == this.GAME_STATE_SELECTION) this.gameState = this.GAME_STATE_CONNECTION;
-		//else if(this.gameState == this.GAME_STATE_CONNECTION) this.gameState = this.GAME_STATE_EXPLORE;
+		else if(this.gameState == this.GAME_STATE_CONNECTION) this.gameState = this.GAME_STATE_THANKS;
+	//	else if(this.gameState == this.GAME_STATE_THANKS) this.resetInspireApp();
 	},
-	/*
+	
 	getMouse:function(e){
 		inspireApp.main.mouse.x = e.pageX - e.target.offsetLeft;
 		inspireApp.main.mouse.y = e.pageY - e.target.offsetTop;
 		//return mouse;
-	},*/
+	},
 	clickFunctions:function(e){
 		var app = inspireApp.main;
 		//console.log(inspireApp.main.canX[0]+", "+inspireApp.main.canY[0]);
@@ -81,35 +83,37 @@ inspireApp.main ={
 			app.changeGameState();
 		}
 		else if(app.gameState == app.GAME_STATE_SELECTION){
-			console.log(inspireApp.main.len);
-			for(var i = 0; i < inspireApp.main.len; i++){
-				//inspireApp.selection.checkClicks(app.mouse);
-				inspireApp.selection.checkClicks(inspireApp.main.canX[i],inspireApp.main.canY[i]);
-			}
+			//console.log(inspireApp.main.len);
+			//for(var i = 0; i < inspireApp.main.len; i++){
+				inspireApp.selection.checkClicks(app.mouse);
+				//console.log(inspireApp.main.canX[i],inspireApp.main.canY[i]);
+				//inspireApp.selection.checkClicks(inspireApp.main.canX[i],inspireApp.main.canY[i]);
+			//}
 		}
 		else if(app.gameState == app.GAME_STATE_CONNECTION){
-			inspireApp.connection.screenState = inspireApp.connection.SCREEN_STATE_CONNECTION;
+			//inspireApp.connection.screenState = inspireApp.connection.SCREEN_STATE_CONNECTION;
 		}
 	},
 	// Mouse is down
 	mouseDown:function(){
 		inspireApp.main.mouseIsDown = true;
-		inspireApp.main.mouseXY();
+		//inspireApp.main.mouseXY();
 	},
 	// Mouse is up
 	mouseUp:function(){
 		inspireApp.main.mouseIsDown = false;
-		inspireApp.main.mouseXY();
+		//inspireApp.main.mouseXY();
 	},
 	mouseXY:function(e){
 		if (!e)
             e = event;
-        inspireApp.main.canX[0] = e.pageX; //- canvas.offsetLeft;
-        inspireApp.main.canY[0] = e.pageY; //- can.offsetTop;
+        inspireApp.main.canX[0] = e.pageX - canvas.offsetLeft;
+        inspireApp.main.canY[0] = e.pageY - canvas.offsetTop;
         inspireApp.main.len = 1;
+		//inspireApp.selection.drag(inspireApp.main.canX[0],inspireApp.main.canY[0]);
 	},
 	checkMouseDown:function(){
-		//console.log(this.mouseIsDown);
+
 		var elements = document.getElementsByTagName('div');
 		for (var i = 0; i < elements.length; i++) {
 			if(this.mouseIsDown){
@@ -153,6 +157,12 @@ inspireApp.main ={
 		artistCircle.src = "assets/pinkBullet.png";
 		artistCircle.onload = function(){
 			inspireApp.selection.artistCircleImages = artistCircle;
+			assetLoadPost();
+		}
+		var exitCircle = new Image();
+		exitCircle.src = "assets/X.png";
+		exitCircle.onload = function(){
+			inspireApp.selection.dropZoneExitCircleImage = exitCircle;
 			assetLoadPost();
 		}
 		for(var i = 0; i < this.decadeCircleImages.length; i++){
@@ -209,7 +219,12 @@ inspireApp.main ={
 		for(var i = 0; i < newImages.length; i++){
 			var oldWidth = newImages[i].width;
 			var oldHeight = newImages[i].height;
-			w = (h * oldWidth)/oldHeight;			
+			w = (h * oldWidth)/oldHeight;	
+			if(w < inspireApp.selection.dropZoneDimensions.w){
+				w = inspireApp.selection.dropZoneDimensions.w;
+				h = (w * oldHeight)/oldWidth;
+				//console.log("image width too small");
+			}
 			newImages[i].width = w;
 			newImages[i].height = h;		
 		}
@@ -239,7 +254,11 @@ inspireApp.main ={
             inspireApp.main.canY[i] = e.targetTouches[i].pageY; //- canvas.offsetTop;
 			//console.log(inspireApp.main.canX[i]+", "+inspireApp.main.canY[i]);
         }
-    }
+    },
+	resetInspireApp:function(){
+		
+		this.gameState = this.GAME_STATE_START;
+	}
 };
 window.onload = function(){
 	//console.log(local_data.decade);
@@ -255,13 +274,14 @@ window.onload = function(){
 	this.canvas.addEventListener("mouseup", function(){inspireApp.main.mouseUp();}, false);
 	this.canvas.addEventListener("mouseout", function(){inspireApp.main.mouseIsDown = false}, false);
 	// Touch Listeners
-	this.canvas.addEventListener("touchstart", inspireApp.main.touchDown, false);
-    this.canvas.addEventListener("touchend", inspireApp.main.touchUp, false);
-    this.canvas.addEventListener("touchmove", inspireApp.main.touchXY, false);
-	window.addEventListener("mousemove", inspireApp.main.mouseXY,false);
+	//this.canvas.addEventListener("touchstart", inspireApp.main.touchDown, false);
+    //this.canvas.addEventListener("touchend", inspireApp.main.touchUp, false);
+    //this.canvas.addEventListener("touchmove", inspireApp.main.touchXY, false);
+	window.addEventListener("mousemove", inspireApp.main.getMouse,false);
 	
 	window.socketHandler = SocketHandler();
 	socketHandler.setSimilarHandler(function(data) {
+		inspireApp.connection.newArtist = data;
 		console.log(data);
 		console.log("received: " + data.name);
 	});
