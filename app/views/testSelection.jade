@@ -4,28 +4,30 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
-   select#first
-    each decade in allArtists.decade
-     optgroup(label=decade.year)
-      for artist in decade.artistsArray
-       option #{artist.name}
-   select#second
-    each decade in allArtists.decade
-     optgroup(label=decade.year)
-      for artist in decade.artistsArray
-       option #{artist.name}
-   button#send Send
- div(style='float:left; display:inline-block;')
-    img#fImage
-    br
-    iframe#fVideo(width='480', height='390', frameborder='0')
-    br
-    p#influ
-  div(style='float:right; display:inline-block;')
-    img#sImage
-    br
-    iframe#sVideo(width='480', height='390', frameborder='0')
-    br
-    p#sinflu
+    select#first
+      each decade in allArtists.decade
+        optgroup(label=decade.year)
+          for artist in decade.artistsArray
+           option #{artist.name}
+    select#second
+      each decade in allArtists.decade
+       optgroup(label=decade.year)
+        for artist in decade.artistsArray
+         option #{artist.name}
+    button#send Send
+    div(style='float:left; display:inline-block;')
+      img#fImage
+      br
+      iframe#fVideo(width='480', height='390', frameborder='0')
+      br
+      p#influ
+    div(style='float:right; display:inline-block;')
+      img#sImage
+      br
+      iframe#sVideo(width='480', height='390', frameborder='0')
+      br
+      p#sinflu
+    audio#similarAudio(src='', autoplay='')
+    script(src='js/jquery.min.js')
     script(src='/socket.io/socket.io.js')
-    script(src="js/socketHandler.js")
+    script(src='js/socketHandler.js')

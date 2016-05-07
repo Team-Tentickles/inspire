@@ -20,7 +20,6 @@ var init = function(){
         var fVideo = document.getElementById('fVideo');
         var influ = document.getElementById('influ');
 
-        console.log(data);
 
         fImage.src = data.first.images[0].url;
         fVideo.src = data.first.video[0].url;
@@ -29,9 +28,14 @@ var init = function(){
         sImage.src = data.second.images[0].url;
         sVideo.src = data.second.video[0].url;
         //sinflu.innerHTML = data.second.influencers[0].name;
-        console.log(data.similar.song);
-        var audioObject = new Audio(data.similar.song);
-        audioObject.play();
+
+        var $audioObject = $('#similarAudio');
+        $audioObject.attr('src', data.similar.song);
+        $audioObject.prop('volume', 0);
+        $audioObject.animate({volume: 1}, 5000);
+        setTimeout(function(){
+            $audioObject.animate({volume: 0}, 5000);
+        }, 10000)
 
     });
     
