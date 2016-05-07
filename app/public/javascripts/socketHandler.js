@@ -47,6 +47,7 @@ var init = function(){
  */
 var SocketHandler = function () {
     var socket = io.connect();
+    var awaitResponse = false;
     
     /**
      * This is the default similarHandler. It just prints
@@ -66,6 +67,19 @@ var SocketHandler = function () {
     
     
     /**
+     * TODO: In theory, the spire should only be submitting one event,
+     * but it's actually submitting multiple. The awaitResponse variables
+     * is used to place a block on all but one of these events being submitted
+     */
+    socket.on('playMusic', function (data) {
+        if (awaitResponse) {
+            awaitResponse = false;
+            console.log(data);
+        }
+    });
+    
+    
+    /**
      * Handle the similarAritst event
      */
     socket.on('similarArtist', function(data) {
@@ -79,6 +93,7 @@ var SocketHandler = function () {
      * Submit two artists to the spire
      */
     var submit = function (artist1, artist2) {
+        awaitResponse = true;
         socket.emit('serverArtist', {
             first: artist1, 
             second: artist2
