@@ -19,17 +19,17 @@ a {
 }
 body {
 	height:100%;
-	background-image: url("/assets/background.jpg");
+	background-image: /*url("/assets/bluelayer.png"),*/url("/assets/background2.jpg");
 }
 	#canvas{
 		position:absolute;
 	}
+
 	div{
 		position:absolute;
 		overflow:scroll;
 		overflow-x: hidden;
-		visibility:hidden;
-		
+		visibility:hidden;	
 		-webkit-touch-callout: none; /* iOS Safari */
 		-webkit-user-select: none;   /* Chrome/Safari/Opera */
 		-khtml-user-select: none;    /* Konqueror */
@@ -37,5 +37,16 @@ body {
 		-ms-user-select: none;       /* Internet Explorer/Edge */
 		user-select: none;
 		/*pointer-events:none;*/
+	}
+	img{
+		visibility: hidden;
+		position:absolute;
+		pointer-events:none;
+		-webkit-touch-callout: none; /* iOS Safari */
+		-webkit-user-select: none;   /* Chrome/Safari/Opera */
+		-khtml-user-select: none;    /* Konqueror */
+		-moz-user-select: none;      /* Firefox */
+		-ms-user-select: none;       /* Internet Explorer/Edge */
+		user-select: none;
 	}
 	
