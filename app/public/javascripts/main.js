@@ -56,19 +56,22 @@ inspireApp.main ={
 		//ctx.fillStyle="white";
 		//ctx.fillRect(0,0,app.CANVAS_WIDTH,app.CANVAS_HEIGHT);
 		//ctx.restore();
+		console.log(this.gameState);
 		ctx.clearRect(0,0,this.CANVAS_WIDTH,this.CANVAS_HEIGHT);
 		// game functions
 		this.checkMouseDown();
 		inspireApp.start.draw();
 		inspireApp.selection.draw(app.mouse, app.mouseIsDown);
-		inspireApp.connection.draw();	
+		inspireApp.connection.draw();
+		inspireApp.thanks.draw();
 	},
 
-	changeGameState:function(){
-		if (this.gameState == this.GAME_STATE_START) this.gameState = this.GAME_STATE_SELECTION;
-		else if(this.gameState == this.GAME_STATE_SELECTION) this.gameState = this.GAME_STATE_CONNECTION;
-		else if(this.gameState == this.GAME_STATE_CONNECTION) this.gameState = this.GAME_STATE_THANKS;
-	//	else if(this.gameState == this.GAME_STATE_THANKS) this.resetInspireApp();
+	changeGameState:function(currentState){
+		//if (this.gameState == this.GAME_STATE_START) this.gameState = this.GAME_STATE_SELECTION;
+		//else if(this.gameState == this.GAME_STATE_SELECTION) this.gameState = this.GAME_STATE_CONNECTION;
+		//else if(this.gameState == this.GAME_STATE_CONNECTION) this.gameState = this.GAME_STATE_THANKS;
+		//else if(this.gameState == this.GAME_STATE_THANKS) this.gameState = this.GAME_STATE_START; //this.resetInspireApp();
+		this.gameState = currentState;
 	},
 	
 	getMouse:function(e){
@@ -80,7 +83,7 @@ inspireApp.main ={
 		var app = inspireApp.main;
 		//console.log(inspireApp.main.canX[0]+", "+inspireApp.main.canY[0]);
 		if(app.gameState == app.GAME_STATE_START){
-			app.changeGameState();
+			app.changeGameState(app.GAME_STATE_SELECTION);
 		}
 		else if(app.gameState == app.GAME_STATE_SELECTION){
 			//console.log(inspireApp.main.len);
@@ -90,9 +93,14 @@ inspireApp.main ={
 				//inspireApp.selection.checkClicks(inspireApp.main.canX[i],inspireApp.main.canY[i]);
 			//}
 		}
-		else if(app.gameState == app.GAME_STATE_CONNECTION){
-			//inspireApp.connection.screenState = inspireApp.connection.SCREEN_STATE_CONNECTION;
+		else if(app.gameState == app.GAME_STATE_THANKS){
+			this.resetInspireApp();
+			app.changeGameState(app.GAME_STATE_START);
 		}
+		/*
+		else if(app.gameState == app.GAME_STATE_CONNECTION){
+			//inspireApp.connection.loaded = true;
+		}*/
 	},
 	// Mouse is down
 	mouseDown:function(){
@@ -256,8 +264,16 @@ inspireApp.main ={
         }
     },
 	resetInspireApp:function(){
+		var selection = inspireApp.selection;
+		var connection = inspireApp.connection;
+		// Selection
+		selection.resetSelection();
+		// Connection
+		connection.resetConnection();
+		// Main
 		
-		this.gameState = this.GAME_STATE_START;
+		this.mouseIsDown = false;
+		//this.changeGameState(this.GAME_STATE_START);
 	}
 };
 window.onload = function(){

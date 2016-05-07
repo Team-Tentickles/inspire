@@ -20,7 +20,7 @@ var AudioObj = function () {
         $audioObject.animate({volume: 1}, 5000);
         setTimeout(function(){
             $audioObject.animate({volume: 0}, 5000);
-        }, 10000);
+        }, 25000);
         $audioObject[0].play();
     };
     
