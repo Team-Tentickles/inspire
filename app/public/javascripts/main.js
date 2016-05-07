@@ -56,7 +56,6 @@ inspireApp.main ={
 		//ctx.fillStyle="white";
 		//ctx.fillRect(0,0,app.CANVAS_WIDTH,app.CANVAS_HEIGHT);
 		//ctx.restore();
-		console.log(this.gameState);
 		ctx.clearRect(0,0,this.CANVAS_WIDTH,this.CANVAS_HEIGHT);
 		// game functions
 		this.checkMouseDown();
@@ -96,6 +95,7 @@ inspireApp.main ={
 		else if(app.gameState == app.GAME_STATE_THANKS){
 			this.resetInspireApp();
 			app.changeGameState(app.GAME_STATE_START);
+			
 		}
 		/*
 		else if(app.gameState == app.GAME_STATE_CONNECTION){

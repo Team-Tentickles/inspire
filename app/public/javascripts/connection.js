@@ -23,6 +23,7 @@ inspireApp.connection ={
 	newArtistCardSize: 1,
 	displayTextPadding: 90,
 	loaded: false,
+	happenedOnce:false,
 	// Artist Card Animation Vars
 	newSize: .6, // (percentage) New artist card size after animation
 	animationTime: 35,
@@ -35,24 +36,30 @@ inspireApp.connection ={
 	draw:function(){
 		var app = inspireApp.main;
 		if(app.gameState == app.GAME_STATE_CONNECTION){
-
 			this.checkForConnection();
 			this.drawArtistCards(this.artistCards);
 		}
 	},
 	
 	drawArtistCards:function(cards){
-		if(this.loaded){
-			var timer;
-			function timeOut(){
-				window.clearTimeout(timer);
-				timer = window.setTimeout(function(){inspireApp.main.changeGameState(inspireApp.main.GAME_STATE_THANKS); /*inspireApp.main.resetInspireApp();*/}, inspireApp.connection.screenStateTimeOut*1000);
+		if(inspireApp.connection.loaded && inspireApp.connection.happenedOnce == false){
+			inspireApp.connection.happenedOnce = true;
+			console.log(inspireApp.connection.loaded);
+			//var timer;
+			//function timeOut(){
 				inspireApp.connection.loaded = false;
-			}
-			timeOut();
+				setTimeout(function(){
+					inspireApp.main.changeGameState(inspireApp.main.GAME_STATE_THANKS);
+					
+					//clearTimeout(timer); /*inspireApp.main.resetInspireApp();*/
+				}, inspireApp.connection.screenStateTimeOut*1000);	
+			//}
+			//timeOut();
+			
 			//setTimeout(function(){inspireApp.main.changeGameState(inspireApp.main.GAME_STATE_THANKS); inspireApp.main.resetInspireApp();}, inspireApp.connection.screenStateTimeOut*1000);
-			//this.loaded = false;
+			
 		}
+		//console.log(inspireApp.connection.loaded);
 		ctx.save();
 		ctx.textBaseline = "middle";
 		//console.log(cards);
@@ -99,6 +106,7 @@ inspireApp.connection ={
 						h: cards.button[0].h
 					}			
 				};
+				this.artistNameSize = cards.artistNames[0].font.size;
 				//this.artistCardsCenter[i] = {x: card.x + card.w/2, y: card.y + card.h/2};
 				//this.artistCardsCenter[0] = {x: center.x, newX: center.x + this.artistCardsTranslateX, speed:this.artistCardsTranslateXspeed, grow: true};
 				//this.artistCardsCenter[1] = {x: center.x, newX: center.x - this.artistCardsTranslateX, speed:this.artistCardsTranslateXspeed, grow: false};
@@ -139,13 +147,13 @@ inspireApp.connection ={
 				button.x = center.x - button.w/2;
 				button.y = card.y + artistImages.h;
 				
-				artistNames.font.size = inspireApp.selection.animate(artistNames.font.size, animateName.minSize, false, animateName.decSize);
+				this.artistNameSize = inspireApp.selection.animate(this.artistNameSize, animateName.minSize, false, animateName.decSize);
 				artistNames.x = center.x;
 				artistNames.y = card.y + artistImages.h + button.h/2;
 				
 				this.artistCardsAlpha = inspireApp.selection.animate(this.artistCardsAlpha, this.artistCardsNewAlpha, true, (this.artistCardsNewAlpha - this.artistCardsAlpha)/this.animationTime);
 			}
-			console.log(this.artistNameAnimation.origSize);
+			//console.log(this.artistNameAnimation.origSize);
 			// ARTIST CARD
 			ctx.save();
 			ctx.strokeStyle = 'rgba(0,0,0,0)';
@@ -191,10 +199,10 @@ inspireApp.connection ={
 				ctx.drawImage(this.newArtistImage, newArtist.x - overWidth, newArtist.y, newArtist.image.w, newArtist.image.h);
 				
 				// Button
-				ctx.drawImage(newArtist.button.image, canvas.width/2 - newArtist.w/2, (canvas.height/2 - newArtist.h/2) + newArtist.image.h);
+				ctx.drawImage(newArtist.button.image, canvas.width/2 - newArtist.w/2, (canvas.height/2 - newArtist.h/2) + inspireApp.selection.dropZoneDimensions.h);
 				
 				// Artist Name
-				inspireApp.selection.drawText(newArtist.name.toUpperCase(), canvas.width/2, (canvas.height/2 - newArtist.h/2) + newArtist.image.h + newArtist.button.h/2, newArtist.button.font.weight, newArtist.button.fontSize, newArtist.button.font.color, newArtist.button.font.font, newArtist.button.font.align);
+				inspireApp.selection.drawText(newArtist.name.toUpperCase(), canvas.width/2, (canvas.height/2 - newArtist.h/2) + inspireApp.selection.dropZoneDimensions.h + newArtist.button.h/2, newArtist.button.font.weight, newArtist.button.fontSize, newArtist.button.font.color, newArtist.button.font.font, newArtist.button.font.align);
 				
 				ctx.stroke();
 				ctx.restore();
@@ -219,6 +227,10 @@ inspireApp.connection ={
 				var oldWidth = inspireApp.connection.newArtistImage.width;
 				var oldHeight = inspireApp.connection.newArtistImage.height;
 				inspireApp.connection.newArtistProperties.image.w = (inspireApp.connection.newArtistProperties.image.h * oldWidth)/oldHeight;
+				if(inspireApp.connection.newArtistProperties.image.w < inspireApp.selection.dropZoneDimensions.w){
+					inspireApp.connection.newArtistProperties.image.w = inspireApp.selection.dropZoneDimensions.w;
+					inspireApp.connection.newArtistProperties.image.h = (inspireApp.connection.newArtistProperties.image.w * oldHeight)/oldWidth;
+				}
 				inspireApp.connection.loaded = true;
 				inspireApp.connection.screenState = inspireApp.connection.SCREEN_STATE_CONNECTION;
 			};	
@@ -239,5 +251,6 @@ inspireApp.connection ={
         this.newArtistImage = undefined;
         this.newArtistProperties = undefined;
 		this.screenState = undefined;
+		this.happenedOnce = false;
 	}
 };   
