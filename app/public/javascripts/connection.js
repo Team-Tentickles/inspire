@@ -16,10 +16,12 @@ inspireApp.connection ={
 	artistImagesAnimation: undefined, // Animation object for Artist Images
 	artistButtonAnimation: undefined, // Animation object for Buttons
 	artistNameAnimation: undefined,	
+	artistNameSize: undefined,
 	newArtist: undefined,
 	newArtistImage: undefined,
 	newArtistProperties: undefined,
 	newArtistCardSize: 1,
+	displayTextPadding: 90,
 	loaded: false,
 	// Artist Card Animation Vars
 	newSize: .6, // (percentage) New artist card size after animation
@@ -33,9 +35,7 @@ inspireApp.connection ={
 	draw:function(){
 		var app = inspireApp.main;
 		if(app.gameState == app.GAME_STATE_CONNECTION){
-			ctx.save();
-			inspireApp.selection.drawText("READY TO ROCK", canvas.width/2, canvas.height/2, this.uiFont.weight, this.uiFont.size, this.uiFont.color, this.uiFont.font, this.uiFont.align);
-			ctx.restore();
+
 			this.checkForConnection();
 			this.drawArtistCards(this.artistCards);
 		}
@@ -43,8 +43,15 @@ inspireApp.connection ={
 	
 	drawArtistCards:function(cards){
 		if(this.loaded){
-			setTimeout(function(){inspireApp.main.changeGameState();}, inspireApp.connection.screenStateTimeOut*1000);
-			this.loaded = false;
+			var timer;
+			function timeOut(){
+				window.clearTimeout(timer);
+				timer = window.setTimeout(function(){inspireApp.main.changeGameState(inspireApp.main.GAME_STATE_THANKS); /*inspireApp.main.resetInspireApp();*/}, inspireApp.connection.screenStateTimeOut*1000);
+				inspireApp.connection.loaded = false;
+			}
+			timeOut();
+			//setTimeout(function(){inspireApp.main.changeGameState(inspireApp.main.GAME_STATE_THANKS); inspireApp.main.resetInspireApp();}, inspireApp.connection.screenStateTimeOut*1000);
+			//this.loaded = false;
 		}
 		ctx.save();
 		ctx.textBaseline = "middle";
@@ -62,6 +69,11 @@ inspireApp.connection ={
 			//center[i] = {x: card.x + card.w/2, y: card.y + card.h/2};
 			//var center = {x: card.x + card.w/2, y: card.y + card.h/2};
 			if(this.screenState == this.SCREEN_STATE_ROCK){
+				
+				ctx.save();
+				inspireApp.selection.drawText("READY TO ROCK", canvas.width/2, canvas.height/2, this.uiFont.weight, this.uiFont.size, this.uiFont.color, this.uiFont.font, this.uiFont.align);
+				ctx.restore();
+				
 				if(i == 0){
 					var x = this.artistCardsTranslateX;
 					var increase = true;
@@ -97,7 +109,7 @@ inspireApp.connection ={
 				
 				this.artistButtonAnimation = {minWidth: button.w*this.newSize, minHeight: button.h*this.newSize, decW: (button.w-(button.w*this.newSize))/this.animationTime, decH: (button.h-(button.h*this.newSize))/this.animationTime};
 				
-				this.artistNameAnimation = {minSize: artistNames.font.size*this.newSize, decSize: (artistNames.font.size-(artistNames.font.size*this.newSize))/this.animationTime};
+				this.artistNameAnimation = {origSize: artistNames.font.size, minSize: artistNames.font.size*this.newSize, decSize: (artistNames.font.size-(artistNames.font.size*this.newSize))/this.animationTime};
 			}
 			if(this.screenState == this.SCREEN_STATE_CONNECTION){
 				var cardCenter = this.artistCardsCenter;
@@ -133,7 +145,7 @@ inspireApp.connection ={
 				
 				this.artistCardsAlpha = inspireApp.selection.animate(this.artistCardsAlpha, this.artistCardsNewAlpha, true, (this.artistCardsNewAlpha - this.artistCardsAlpha)/this.animationTime);
 			}
-			
+			console.log(this.artistNameAnimation.origSize);
 			// ARTIST CARD
 			ctx.save();
 			ctx.strokeStyle = 'rgba(0,0,0,0)';
@@ -164,36 +176,34 @@ inspireApp.connection ={
 			if(this.screenState == this.SCREEN_STATE_CONNECTION){
 				// NEW ARTIST CARD
 				ctx.save();
-					ctx.strokeStyle = 'rgba(0,0,0,0)';
-					var newArtist = this.newArtistProperties;
-					//var cardW = this.originalCard.w*this.newArtistCardSize;
-					//var cardH = this.originalCard.h*this.newArtistCardSize;
-					//var buttonW = newArtist.button.w;
-					//var buttonH = newArtist.button.h;
-					var overWidth = (newArtist.image.w - newArtist.w)/2;
-					
-					inspireApp.selection.roundRect(canvas.width/2 - newArtist.w/2, canvas.height/2 - newArtist.h/2, this.artistCards.dimensions[0].br, newArtist.w, newArtist.h);
-					ctx.clip();
-					
-					// Artist Image
-					ctx.drawImage(this.newArtistImage, newArtist.x - overWidth, newArtist.y, newArtist.image.w, newArtist.image.h);
-					
-					// Button
-					ctx.drawImage(newArtist.button.image, canvas.width/2 - newArtist.w/2, (canvas.height/2 - newArtist.h/2) + newArtist.image.h);
-					
-					inspireApp.selection.drawText(newArtist.name.toUpperCase(), canvas.width/2, (canvas.height/2 - newArtist.h/2) + newArtist.image.h + newArtist.button.h/2, newArtist.button.font.weight, newArtist.button.fontSize, newArtist.button.font.color, newArtist.button.font.font, newArtist.button.font.align);
-					/*
-					
-					ctx.drawImage(artistImages.image, artistImages.x, artistImages.y, artistImages.w, artistImages.h);
-					
-					// Button
-					ctx.drawImage(button.image, button.x, button.y, button.w, button.h);
-					
-					// Artist Name
-					inspireApp.selection.drawText(artistNames.name, artistNames.x, artistNames.y, artistNames.font.weight, artistNames.font.size, artistNames.font.color, artistNames.font.font, artistNames.font.align);
-					*/
-					ctx.stroke();
-					ctx.restore();
+				ctx.strokeStyle = 'rgba(0,0,0,0)';
+				var newArtist = this.newArtistProperties;
+				//var cardW = this.originalCard.w*this.newArtistCardSize;
+				//var cardH = this.originalCard.h*this.newArtistCardSize;
+				//var buttonW = newArtist.button.w;
+				//var buttonH = newArtist.button.h;
+				var overWidth = (newArtist.image.w - newArtist.w)/2;
+				
+				inspireApp.selection.roundRect(canvas.width/2 - newArtist.w/2, canvas.height/2 - newArtist.h/2, this.artistCards.dimensions[0].br, newArtist.w, newArtist.h);
+				ctx.clip();
+				
+				// Artist Image
+				ctx.drawImage(this.newArtistImage, newArtist.x - overWidth, newArtist.y, newArtist.image.w, newArtist.image.h);
+				
+				// Button
+				ctx.drawImage(newArtist.button.image, canvas.width/2 - newArtist.w/2, (canvas.height/2 - newArtist.h/2) + newArtist.image.h);
+				
+				// Artist Name
+				inspireApp.selection.drawText(newArtist.name.toUpperCase(), canvas.width/2, (canvas.height/2 - newArtist.h/2) + newArtist.image.h + newArtist.button.h/2, newArtist.button.font.weight, newArtist.button.fontSize, newArtist.button.font.color, newArtist.button.font.font, newArtist.button.font.align);
+				
+				ctx.stroke();
+				ctx.restore();
+				
+				// Display Text
+				ctx.save();
+				inspireApp.selection.drawText("YOUR ROCK", canvas.width/2, canvas.height/2 - (newArtist.h/2 + this.displayTextPadding), this.uiFont.weight, this.uiFont.size, this.uiFont.color, this.uiFont.font, this.uiFont.align);
+				inspireApp.selection.drawText("CONNECTION", canvas.width/2, canvas.height/2 - (newArtist.h/2 + this.displayTextPadding) + this.uiFont.size, this.uiFont.weight, this.uiFont.size, this.uiFont.color, this.uiFont.font, this.uiFont.align);
+				ctx.restore();	
 			}
 		ctx.restore();
 	},
@@ -214,5 +224,20 @@ inspireApp.connection ={
 			};	
 			this.newArtistImage.src = source;
 		}
+	},
+	resetConnection:function(){
+		console.log("Connection reset");
+		this.artistCards = undefined;
+		this.artistCardsCenter = [];
+		this.artistCardsMoveX = [];
+		this.artistCardsCenterAnimation = undefined;
+		this.artistCardsAnimation = undefined;
+		this.artistImagesAnimation = undefined;
+        this.artistButtonAnimation = undefined;
+        this.artistNameAnimation = undefined;
+        this.newArtist = undefined;
+        this.newArtistImage = undefined;
+        this.newArtistProperties = undefined;
+		this.screenState = undefined;
 	}
-};
+};   

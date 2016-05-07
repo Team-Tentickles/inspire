@@ -9,7 +9,7 @@ inspireApp.selection ={
 	canvasCenterY:inspireApp.main.CANVAS_HEIGHT/2,
 	// UI
 	uiFont: inspireApp.main.uiFont,
-	draggedArtists:[],
+	//draggedArtists:[],
 	// Center of decades ui
 	decadesUIradius:260,
 	// array of decadeCircle objects
@@ -457,7 +457,7 @@ inspireApp.selection ={
 						inspireApp.connection.artistCards = artistCards;
 						inspireApp.connection.screenState = inspireApp.connection.SCREEN_STATE_ROCK;
 						// Change game state to Connection State
-						inspireApp.main.changeGameState();
+						inspireApp.main.changeGameState(inspireApp.main.GAME_STATE_CONNECTION);
 					}
 				}
 			}
@@ -479,9 +479,8 @@ inspireApp.selection ={
 						var artistCircle = decadeCircle.artists[j];
 						if(!artistCircle.used){
 							if(this.pointInsideCircle(this.lastClick.x, this.lastClick.y, artistCircle.lastX, artistCircle.lastY, artistCircle.radius) && mouseIsDown){
-								console.log("true");
-									artistCircle.x = mouse.x;
-									artistCircle.y = mouse.y;
+								artistCircle.x = mouse.x;
+								artistCircle.y = mouse.y;
 							}
 							else if(!mouseIsDown){
 								// Check to see if artist circle is in drop zone
@@ -626,5 +625,25 @@ inspireApp.selection ={
 		ctx.font = weight + " " + size + "px " + font;
 		ctx.fillStyle = color;
 		ctx.fillText(string, x, y);	
+	},
+	resetSelection:function(){
+		//this.dropZones = [];
+		console.log("Selection reset");
+		this.lastClick = undefined;
+		this.artistsSentToSpire = 0;
+		for(var j = 0; j < this.dropZones.length; j++){
+			var dropZone = this.dropZones[j];
+			dropZone.occupied = false;
+			dropZone.windowState = this.dropZoneStateSelect;
+			dropZone.artist = "";
+		}
+		for(var i = 0; i < this.decadeCircles.length; i++){
+			var decade = this.decadeCircles[i];
+			decade.selected = false;
+			for(var j = 0; j < this.decadeCircles[i].artists.length; j++){
+				var artist = this.decadeCircles[i].artists[j];
+				artist.used = false;
+			}
+		}
 	}
 };
