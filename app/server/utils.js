@@ -42,8 +42,9 @@ var findSimilar = function(data, callback){
 			console.log(err);
 		}
 		else{
-			console.log(res.response.artists[1]);
-			callback(null, res.response.artists[1]);
+			var rando = Math.floor(Math.random()*5);
+			console.log("The similar artist is " + res.response.artists[rando].name);
+			callback(null, res.response.artists[rando]);
 		}
 	});
 	
@@ -76,7 +77,7 @@ var findPhoto = function(data, callback){
 var findVideo = function(data, callback){
 	echo.get("artist/video", { "name": data}, function (err, res) {
 		if(err){
-			console.error("video not found");
+			console.log("video not found");
 			console.log(err);
 		}
 		else{
@@ -91,11 +92,18 @@ var findVideo = function(data, callback){
 
 //Helper function to turn names into spotify IDs
 var findArtistId = function(data, callback){
+	if(data == 'The Spice Girls'){
+		data = 'Spice Girls';
+	}
+	console.log('Searching for ID for ' + data);
+
 	spotify.searchArtists(data, {type: 'artist'}, function(err, res){
 		if (err){
 			console.log ('ID Error: ' + err);
 		}
 		else{
+			
+			console.log(data + ": " + res.body.artists.items[0].id);
 			callback(null, res.body.artists.items[0].id);
 		}
 	});
@@ -108,13 +116,13 @@ var findAlbumArt = function(data, callback){
 			console.log('ID Error: ' + err)
 		}
 		else{
+			console.log('')
 			spotify.getArtistAlbums(res, 'US', function(err, res){
 				if(err){
 					console.log('Album Error: ' + err);
 				}
 				else{
 					console.log("Album art found for " + data);
-					console.log(res.body.items[0].images);
 					var imgArray = res.body.items.map(function (img) {
 						if(img.images[0]){
 							return {'url': img.images[0].url}
@@ -123,7 +131,7 @@ var findAlbumArt = function(data, callback){
 							return {'url' : ''}
 						}
 					});
-					console.log(imgArray);
+					console.log('imgArray made for ' + data);
 					callback(null, imgArray);				
 				}
 			});
@@ -261,7 +269,7 @@ var flattenPackage = function(package) {
         flat.mainAlbum8 = "";
 	}
 	
-    console.log(util.inspect(flat));
+    //console.log(util.inspect(flat));
 	return flat;
 };
 

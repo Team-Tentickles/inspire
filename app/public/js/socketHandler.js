@@ -37,6 +37,7 @@ var init = function(){
         //     $audioObject.animate({volume: 0}, 5000);
         // }, 10000);
 
+
     });
     
     //* This will be the function to get the artist and send it to socket to process *//
