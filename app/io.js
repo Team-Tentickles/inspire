@@ -17,6 +17,10 @@ io.sockets.on("connection", function(socket) {
         console.log(data);
         socket.broadcast.to('AssetShare').emit("fromSpire", data);
     });
+	
+	socket.on('animationDone', function(data) {
+		socket.broadcast.to('AssetShare').emit('playMusic', data);
+	})
 });
 
 module.exports = io;
