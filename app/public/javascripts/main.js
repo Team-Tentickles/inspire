@@ -280,10 +280,22 @@ window.onload = function(){
 	window.addEventListener("mousemove", inspireApp.main.getMouse,false);
 	
 	window.socketHandler = SocketHandler();
+	window.audioObj = AudioObj();
+	audioObj.init('#similarAudio');
+	
+	console.log('setters');
 	socketHandler.setSimilarHandler(function(data) {
 		inspireApp.connection.newArtist = data;
 		console.log(data);
 		console.log("received: " + data.name);
+	});
+	socketHandler.setPackageHandler(function(data) {
+		console.log(data);
+		audioObj.setSong(data.similar.song);
+	});
+	socketHandler.setPlayAudioHandler(function(data) {
+		console.log(data);
+		audioObj.playSong();
 	});
 	// initialize app
 	//inspireApp.main.ready();

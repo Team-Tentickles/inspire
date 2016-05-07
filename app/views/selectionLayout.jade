@@ -1,4 +1,3 @@
-
 doctype html
 html
   head
@@ -8,14 +7,17 @@ html
       var local_data = !{JSON.stringify(allArtists)};
     script(src='/socket.io/socket.io.js')
     script(src='/javascripts/socketHandler.js')
+    script(src='/javascripts/audio.js')
     
     script(type='text/javascript', src='/javascripts/main.js')
     script(type='text/javascript', src='/javascripts/start.js')
     script(type='text/javascript', src='/javascripts/selection.js')
     script(type='text/javascript', src='/javascripts/connection.js')
-    script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js')
+    script(type='text/javascript', src='/javascripts/jquery.min.js')
+    // script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js')
   body
 
     canvas#canvas
+    audio#similarAudio(src='', autoplay='')
 
     //block content
