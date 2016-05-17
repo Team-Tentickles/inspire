@@ -32,6 +32,12 @@ inspireApp.connection ={
 	screenState: undefined,
 	screenStateTimeOut: 10, // seconds before window times out
 	
+    /*
+            draw:
+            Called in main game loop, but only executes inner functions if in the 'Connection' game state.
+            Constantly running checkForConnection and drawing the artist cards.
+    
+    */
 	draw:function(){
 		var app = inspireApp.main;
 		if(app.gameState == app.GAME_STATE_CONNECTION){
@@ -41,21 +47,25 @@ inspireApp.connection ={
 		}
 	},
 	
+    /*
+            drawArtistCards:
+            Draws the two artists picked by the users.
+            Once a connection is found, animations move the artist cards and a timer is triggered which eventually pushes the app to the final game state.
+    
+    */
 	drawArtistCards:function(cards){
 		if(this.loaded){
 			var timer;
 			function timeOut(){
 				window.clearTimeout(timer);
-				timer = window.setTimeout(function(){inspireApp.main.changeGameState(inspireApp.main.GAME_STATE_THANKS); /*inspireApp.main.resetInspireApp();*/}, inspireApp.connection.screenStateTimeOut*1000);
+				timer = window.setTimeout(function(){inspireApp.main.changeGameState(inspireApp.main.GAME_STATE_THANKS);}, inspireApp.connection.screenStateTimeOut*1000);
 				inspireApp.connection.loaded = false;
 			}
 			timeOut();
-			//setTimeout(function(){inspireApp.main.changeGameState(inspireApp.main.GAME_STATE_THANKS); inspireApp.main.resetInspireApp();}, inspireApp.connection.screenStateTimeOut*1000);
-			//this.loaded = false;
 		}
 		ctx.save();
 		ctx.textBaseline = "middle";
-		//console.log(cards);
+		
 		for(var i = 0; i < inspireApp.selection.dropZones.length; i++){
 			
 			var card = cards.dimensions[i];
@@ -65,9 +75,7 @@ inspireApp.connection ={
 			var center = {};
 			center.x = cards.dimensions[i].x + card.w/2;
 			center.y = cards.dimensions[i].y + card.h/2;
-			//var center;
-			//center[i] = {x: card.x + card.w/2, y: card.y + card.h/2};
-			//var center = {x: card.x + card.w/2, y: card.y + card.h/2};
+
 			if(this.screenState == this.SCREEN_STATE_ROCK){
 				
 				ctx.save();
@@ -83,7 +91,6 @@ inspireApp.connection ={
 					var increase = false;
 				}
 				this.artistCardsMoveX[i] = {oldX: cards.dimensions[i].x + cards.dimensions[i].w/2, newX: cards.dimensions[i].x + cards.dimensions[i].w/2 + x, grow: increase}
-				//this.originalCard = {w: cards.dimensions[0].w, h: cards.dimensions[0].h, button: {image: cards.button[0].image, w: cards.button[0].w, h: cards.button[0].h}};
 				this.newArtistProperties = {
 					x: canvas.width/2 - (cards.dimensions[0].w*this.newArtistCardSize)/2, 
 					y: canvas.height/2 - (cards.dimensions[0].h*this.newArtistCardSize)/2, 
@@ -99,9 +106,6 @@ inspireApp.connection ={
 						h: cards.button[0].h
 					}			
 				};
-				//this.artistCardsCenter[i] = {x: card.x + card.w/2, y: card.y + card.h/2};
-				//this.artistCardsCenter[0] = {x: center.x, newX: center.x + this.artistCardsTranslateX, speed:this.artistCardsTranslateXspeed, grow: true};
-				//this.artistCardsCenter[1] = {x: center.x, newX: center.x - this.artistCardsTranslateX, speed:this.artistCardsTranslateXspeed, grow: false};
 				
 				this.artistCardsAnimation = {minWidth: card.w*this.newSize, minHeight: card.h*this.newSize, decW: (card.w-(card.w*this.newSize))/this.animationTime, decH: (card.h-(card.h*this.newSize))/this.animationTime};
 				
@@ -117,11 +121,7 @@ inspireApp.connection ={
 				var animateImage = this.artistImagesAnimation;
 				var animateButton = this.artistButtonAnimation;
 				var animateName = this.artistNameAnimation;
-				//console.log(this.artistCardsMoveX[0].newX+", "+this.artistCardsMoveX[1].newX);
-				// Animate
-				//console.log(center + ", "+ cardCenter);
-				//console.log(cardCenter[i]);
-				//center.x = inspireApp.selection.animate(center.x, cardCenter[i].newX, cardCenter[i].grow, cardCenter[i].speed);			
+			
 				center.x = inspireApp.selection.animate(center.x, this.artistCardsMoveX[i].newX, this.artistCardsMoveX[i].grow, Math.abs(this.artistCardsMoveX[i].newX - this.artistCardsMoveX[i].oldX)/this.animationTime);
 				
 				card.w = inspireApp.selection.animate(card.w, animateCard.minWidth, false, animateCard.decW);
@@ -178,10 +178,6 @@ inspireApp.connection ={
 				ctx.save();
 				ctx.strokeStyle = 'rgba(0,0,0,0)';
 				var newArtist = this.newArtistProperties;
-				//var cardW = this.originalCard.w*this.newArtistCardSize;
-				//var cardH = this.originalCard.h*this.newArtistCardSize;
-				//var buttonW = newArtist.button.w;
-				//var buttonH = newArtist.button.h;
 				var overWidth = (newArtist.image.w - newArtist.w)/2;
 				
 				inspireApp.selection.roundRect(canvas.width/2 - newArtist.w/2, canvas.height/2 - newArtist.h/2, this.artistCards.dimensions[0].br, newArtist.w, newArtist.h);
@@ -207,7 +203,12 @@ inspireApp.connection ={
 			}
 		ctx.restore();
 	},
-	//inspireApp.connection.screenState = inspireApp.connection.SCREEN_STATE_CONNECTION;
+	
+    /*
+           
+           Checks for returned artist from socket.io and creates image object from data.
+   
+   */
 	checkForConnection:function(){
 		
 		if(this.newArtist != undefined){
@@ -215,7 +216,6 @@ inspireApp.connection ={
 			this.newArtistImage = new Image();
 			this.newArtistProperties.name = this.newArtist.name;
 			this.newArtistImage.onload = function(){
-				//console.log(inspireApp.connection.newArtistImage.width);
 				var oldWidth = inspireApp.connection.newArtistImage.width;
 				var oldHeight = inspireApp.connection.newArtistImage.height;
 				inspireApp.connection.newArtistProperties.image.w = (inspireApp.connection.newArtistProperties.image.h * oldWidth)/oldHeight;
@@ -225,8 +225,13 @@ inspireApp.connection ={
 			this.newArtistImage.src = source;
 		}
 	},
+    
+    /*
+    
+            Called by main when application is reset.
+    
+    */
 	resetConnection:function(){
-		console.log("Connection reset");
 		this.artistCards = undefined;
 		this.artistCardsCenter = [];
 		this.artistCardsMoveX = [];
