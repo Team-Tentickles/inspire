@@ -1,3 +1,6 @@
+/**
+ * Set all of the API Variables
+ */
 var rovi = require('rovijs'),
 	echo = require('echonestjs'),
 	spotifyAPI = require('spotify-web-api-node'),
@@ -6,7 +9,10 @@ var rovi = require('rovijs'),
 	config = require('./config/config.js'),
 	util = require('util');
 
-//initializing the Rovi and Echo keys
+/**
+ * Initialize all of the Keys
+ * The keys are stored in our config file
+ */
 rovi.init(config.rovi.key, config.rovi.secret);
 echo.init(config.echo.key);
 var dis = new discogs({userToken: 'xQSstXxQtGrcxUDRGSHJYjshQcuqYgbsBQlMKagH'});
@@ -18,7 +24,11 @@ var spotify = new spotifyAPI({
 
 var db = dis.database();
 
-//finds the influeners using rovi
+/**
+ * Finds influencers using the Rovi API
+ * Returns an influencer's name
+ * Unused in our Final Spire but the capability remains
+ */
 var findInflu = function(data, callback){
 	rovi.get("name/influencers", { "name": data}, function (err, res) {
 		if(err){
@@ -32,7 +42,10 @@ var findInflu = function(data, callback){
 	
 };
 
-//finds similarities using echonest
+/**
+ * Finds similar artists using the Echoest API
+ * Returns a random top 5 artist data
+ */
 var findSimilar = function(data, callback){
 	var artistnames = [data.first, data.second];
 
@@ -43,15 +56,16 @@ var findSimilar = function(data, callback){
 		}
 		else{
 			var rando = Math.floor(Math.random()*5);
-			console.log("The similar artist is " + res.response.artists[rando].name);
 			callback(null, res.response.artists[rando]);
 		}
 	});
 	
 };
 
-//Find Images for artist using discogs
-//Currently only logs images
+/** 
+ * Find Images for artist using discogs
+ * Returns an array of images
+ */
 var findPhoto = function(data, callback){
 	db.search(data, {'type': 'artist'}, function(err, data){
 
@@ -70,10 +84,13 @@ var findPhoto = function(data, callback){
 	});		
 };
 
-//Finds video for artist
-//A regular URL is returned from API services so we need to replace the URL to add the "embed" to make it website friendly
-//Will need to check for all video sources (youtube, dailymotion, etc)
-//Possible more effiecient way?
+
+/**
+ * Finds videos for given Artist
+ * The URL needs to be edited to make it usable with iframes
+ * Returns a URL to video as a strig=ng
+ * Unused in our Final Spire but capability remains
+ */
 var findVideo = function(data, callback){
 	echo.get("artist/video", { "name": data}, function (err, res) {
 		if(err){
@@ -90,39 +107,41 @@ var findVideo = function(data, callback){
 	});
 };
 
-//Helper function to turn names into spotify IDs
+
+/**
+ * Helper function to turn names into spotify IDs
+ * Returns ID as a string
+ */
 var findArtistId = function(data, callback){
 	if(data == 'The Spice Girls'){
 		data = 'Spice Girls';
 	}
-	console.log('Searching for ID for ' + data);
 
 	spotify.searchArtists(data, {type: 'artist'}, function(err, res){
 		if (err){
 			console.log ('ID Error: ' + err);
 		}
 		else{
-			
-			console.log(data + ": " + res.body.artists.items[0].id);
 			callback(null, res.body.artists.items[0].id);
 		}
 	});
 }
 
-//Find artist album art using spotify
+/**
+ * Finds artist album art using Spotify API
+ * Returns an array of image URLS
+ */
 var findAlbumArt = function(data, callback){
 	findArtistId(data, function(err,res){
 		if(err){
 			console.log('ID Error: ' + err)
 		}
 		else{
-			console.log('')
 			spotify.getArtistAlbums(res, 'US', function(err, res){
 				if(err){
 					console.log('Album Error: ' + err);
 				}
 				else{
-					console.log("Album art found for " + data);
 					var imgArray = res.body.items.map(function (img) {
 						if(img.images[0]){
 							return {'url': img.images[0].url}
@@ -131,7 +150,6 @@ var findAlbumArt = function(data, callback){
 							return {'url' : ''}
 						}
 					});
-					console.log('imgArray made for ' + data);
 					callback(null, imgArray);				
 				}
 			});
@@ -139,7 +157,10 @@ var findAlbumArt = function(data, callback){
 	});
 }
 
-//Finds song for artist  using Spotify
+/**
+ * Finds a song for given artist
+ * Returns a URL as a string
+ */
 var findSong = function(data, callback){
 	findArtistId(data, function(err, res){
 		if (err){
@@ -156,7 +177,6 @@ var findSong = function(data, callback){
 							console.log('Song Error: ' + err);
 						}
 						else{
-							console.log("Song found for " + data);
 							callback(null, res.body.preview_url);
 						}
 					});
@@ -268,13 +288,16 @@ var flattenPackage = function(package) {
 		flat.mainAlbum7 = "";
         flat.mainAlbum8 = "";
 	}
-	
-    //console.log(util.inspect(flat));
 	return flat;
 };
 
 
-//Calls each helper function and makes it into a single object called datapackage
+/**
+ * Creates an object with all artists' data
+ * then sends it via Socket.IO
+ * Calls previous helper functions
+ * Returns an object 
+ */
 var makePackage = function(data, socket){
 	var dataPackage = {
 		first: {
@@ -301,8 +324,12 @@ var makePackage = function(data, socket){
 		}
 	};
 
-	//Async.js allows us to call multiple async functions at once 
-	//and then wait for a reply from all of them before continuing
+	/**
+	 * Async.js allows us to call our functions
+	 * concurrently and wait for a response from
+	 * each function before continuing. If one call f
+	 * fails, they all fail.
+	 */
 	async.parallel(
 		{
 			firstVideo: function(callback){
@@ -337,7 +364,6 @@ var makePackage = function(data, socket){
 			if (err){
 				console.log('First Sync Error: ' + err);
 			}
-			console.log("First async succeeded");
 			dataPackage.first.video.push({'url': results.firstVideo});
 			dataPackage.second.video.push({'url':results.secondVideo});
 
@@ -374,7 +400,6 @@ var makePackage = function(data, socket){
 					if (err){
 						console.log('Second Sync Error: ' + err);
 					}
-					console.log("Second Async succeeded");
 					dataPackage.similar.video.push({'url': results.similarVideo});
 					dataPackage.similar.images = results.similarImg;
 					dataPackage.similar.song = results.similarSong;
