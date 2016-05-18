@@ -9,7 +9,6 @@ inspireApp.selection ={
 	canvasCenterY:inspireApp.main.CANVAS_HEIGHT/2,
 	// UI
 	uiFont: inspireApp.main.uiFont,
-	//draggedArtists:[],
 	// Center of decades ui
 	decadesUIradius:260,
 	// array of decadeCircle objects
@@ -65,21 +64,23 @@ inspireApp.selection ={
 	// Assets
 	purpleButton:undefined,
 	greyButton:undefined,
-
-	
 	dropZoneArtist:"",
-	// Vars for drag function
-	//mouseIsDown:false,
 	lastClick:undefined,
     artistsSentToSpire:0,
 	
-	// Functions
+	/*
+        Initialize selection screen. Called in main.ready
+    */
 	ready:function(artists){
 		// create decade circles
 		inspireApp.selection.createDecadesUI(artists);
 		inspireApp.selection.createArtistUI(artists);
 		inspireApp.selection.createDropZones();
 	},
+    
+    /*
+        Called in main game loop, draws selection screen.
+    */
 	draw:function(mouse,mouseIsDown){
 		var app = inspireApp.main;
 		if(app.gameState == app.GAME_STATE_SELECTION){
@@ -97,6 +98,10 @@ inspireApp.selection ={
 			
 		}
 	},
+    
+    /*
+        Creates Decade circle objects
+    */
 	createDecadesUI:function(artists){
 		var radians = (2*Math.PI)/this.totalDecades; // findRads divides total radians in a circle by num of decades
 		var startRad = 5*radians;
@@ -119,6 +124,9 @@ inspireApp.selection ={
 			if(startRad > (2*Math.PI)) startRad = startRad - (2*Math.PI);
 		}
 	},
+    /*
+        Draws Decade Circles and calls animate function if they are selected.
+    */
 	drawDecadeCircles:function(){
 		for(var i = 0; i < this.decadeCircles.length; i++){
 			var circle = this.decadeCircles[i];
@@ -132,6 +140,9 @@ inspireApp.selection ={
 			ctx.drawImage(circle.image, circle.x - circle.radius, circle.y - circle.radius, circle.radius*2, circle.radius*2); 
 		}
 	},
+    /*
+        Creates artist objects, pushes them into an array and adds them as a property of their respective decade circle object
+    */
 	createArtistUI:function(artists){
 		var imageIndex = 0; // increments artistImages array index
 		for(var i = 0; i < this.decadeCircles.length; i++){
@@ -176,6 +187,9 @@ inspireApp.selection ={
 			}
 		}	
 	},
+    /*
+        Draws artist circles and text if their parent decade circle is selected.
+    */
 	drawArtistCircles:function(){
 		for(var i = 0; i < this.decadeCircles.length; i++){
 			if(this.decadeCircles[i].selected){
@@ -185,16 +199,17 @@ inspireApp.selection ={
 					ctx.save();
 					if(circle.used) stroke="gray";
 					ctx.drawImage(circle.circleImage, circle.x - circle.radius, circle.y - circle.radius, circle.radius*2, circle.radius*2);
-					/*ctx.strokeStyle = stroke;
-					ctx.beginPath();
-					ctx.arc(circle.x, circle.y, circle.radius, 0, 2*Math.PI);
-					ctx.stroke();*/
 					this.drawText(circle.info.name, circle.x + circle.textStyle.padding, circle.y, this.artistCircleFont.weight, this.artistCircleFont.size, this.artistCircleFont.color, this.artistCircleFont.font, circle.textStyle.align);
 					ctx.restore();
 				}					
 			}
 		}
 	},
+    /*
+    
+        Creates drop area objects. Also contains properties for formating artist cards when drop zones are occupied.
+   
+   */
 	createDropZones:function(){ // Create both drop zone objects {x, y, radius, occupied}
 		var dropA = {x:this.dropZoneRadius + this.dropZonePadding};
 		var dropB = {x:canvas.width - (this.dropZoneRadius+this.dropZonePadding)};
@@ -262,15 +277,11 @@ inspireApp.selection ={
 			$(dropZoneImg).offset({top: drops.y - drops.radius + this.dropZoneButtonHeight/2, left: drops.x - drops.radius});
 			dropZoneImg.style.width = drops.radius*2 + "px";
 			dropZoneImg.style.height = drops.radius*2 + "px";
-			//dropZoneImg.style.backgroundImage = "url('assets/DragArtist1.gif')";
 			dropZoneImg.style.backgroundSize = "contain";
 			$(dropZoneImg).attr("id","dropZones"+i);
 			$(dropZoneImg).attr("src", "assets/DragArtist1.gif");
 			$(dropZoneImg).attr("draggable", "false");
-			//$(".dropZones").css( "visibility", "visible" );
-			//$(".dropZones").css( "background-size", "contain" );
 			document.body.appendChild(dropZoneImg);
-			console.log(dropZoneImg);
 			// Artist Bio
 			var bioFont = drops.content.artistBio.font;
 			var bio = document.createElement("div");
@@ -285,6 +296,10 @@ inspireApp.selection ={
 			document.body.appendChild(bio);
 		}
 	},
+    
+    /*
+        Draws drop zones and if occupied, draws artist card in its place.
+    */
 	drawDropZones:function(){	
 		ctx.save();
 		ctx.textBaseline = "middle";		
@@ -359,8 +374,7 @@ inspireApp.selection ={
                         var b = drops.button[1];
 				        this.drawText("GO BACK", drops.x, b.y + b.h/2, b.font.weight, b.font.size, b.font.color, b.font.font, b.font.align);					
 					}		
-				}
-						
+				}						
 				// Button 
 				var b = drops.button[0];
 					// Store button properties
@@ -392,12 +406,7 @@ inspireApp.selection ={
 				// Exit Button
                 if(drops.exit.enabled){
 					ctx.drawImage(this.dropZoneExitCircleImage, drops.exit.x - drops.exit.radius, drops.exit.y - drops.exit.radius, drops.exit.radius*2, drops.exit.radius*2);
-					/*
-                    ctx.beginPath();
-                    ctx.arc(drops.exit.x, drops.exit.y, drops.exit.radius, 0, 2*Math.PI);
-                    ctx.stroke();
-                    this.drawText("X",drops.exit.x, drops.exit.y, "normal",  20, "black", "Arial", "center");
-					*/
+					
                 }
 			}
 			if(!drops.occupied){
@@ -414,6 +423,10 @@ inspireApp.selection ={
 		}
 		ctx.restore();
 	},
+    
+    /*
+        Triggered by mouse click, checks to see if click occured in any interactive elements
+    */
 	checkClicks:function(mouse){
 		// decade circles
 		for(var i = 0; i < this.totalDecades; i++){
@@ -452,7 +465,6 @@ inspireApp.selection ={
 						// SEND ARTIST TO SPIRE CODE
 						// store button images in object	
 						var artistCards = {dimensions: this.dropZoneArtistCards, artistImages: this.dropZoneArtistImages, artistNames: this.dropZoneArtistNames, button: this.dropZoneArtistButton};
-						console.log(artistCards);
 						socketHandler.submit(artistCards.artistNames[0].name, artistCards.artistNames[1].name);
 						inspireApp.connection.artistCards = artistCards;
 						inspireApp.connection.screenState = inspireApp.connection.SCREEN_STATE_ROCK;
@@ -461,15 +473,19 @@ inspireApp.selection ={
 					}
 				}
 			}
-
             var b = drops.button[1];
             if(this.pointInsideRect(b.x, b.y, b.w, b.h, mouse.x, mouse.y)){
                 drops.windowState = this.dropZoneStateSelect;
             }
 		}
-		
 		this.lastClick = {x: mouse.x, y: mouse.y}; // keep track of coords where the mouse was last clicked
 	},
+    
+    /*
+    
+        Allows artist circles to be dragged by the mouse, if released they return to their original x y position
+    
+    */
 	drag:function(mouse,mouseIsDown){
 	
 			for(var i = 0; i < this.decadeCircles.length; i++){
@@ -494,10 +510,13 @@ inspireApp.selection ={
 				}
 			}
 	},
+    
+        /*
+        
+            Continuously checks the drop zones to see if the artist has been dragged into it.
+        
+        */
 		checkDropZones:function(artist){
-			//console.log(this.draggedArtists);
-			//for(var j = 0; j < this.draggedArtists.length; j++){
-			//	var artist  = this.draggedArtists[j];
 				
 				for(var i = 0; i < this.dropZones.length; i++){
 					var drops = this.dropZones[i];
@@ -518,7 +537,6 @@ inspireApp.selection ={
 						}
 					}
 					else if(!drops.occupied){
-					//console.log(artist);
 						if(this.pointInsideCircle(artist.x, artist.y, drops.x, drops.y, drops.radius)){
 							inspireApp.selection.checkArtists(artist);
 							drops.windowState = this.dropZoneStateSelect;
@@ -530,9 +548,11 @@ inspireApp.selection ={
 						}
 					}
 				}
-			//	this.returnArtist(artist);
-			//}
 		},
+        
+        /* 
+            If artist has been selected, set used to true so it can not be chosen again
+        */
 		checkArtists:function(artist, lastArtist){
 			for(var i = 0; i < this.decadeCircles.length; i++){
 				for(var j = 0; j < this.decadeCircles[i].artists.length; j++){
@@ -550,18 +570,12 @@ inspireApp.selection ={
 				}
 			}
 		},
-		/*
-	returnArtist:function(artist){
-		for(var i = 0; i < this.decadeCircles.length; i++){
-			for(var j = 0; j < this.decadeCircles[i].artists.length; j++){
-				var a = this.decadeCircles[i].artists[j];
-				if(artist.info.name == a.info.name){
-					a.x = a.lastX;
-					a.y = a.lastY;
-				}
-			}
-		}
-	},*/
+    
+    /*
+        
+        Helper function for updating the main message 
+        
+    */
 	displayMessage:function(){
 		var message;
 		for(var i = 0; i < this.decadeCircles.length; i++){
@@ -570,18 +584,13 @@ inspireApp.selection ={
 				message = "DRAG ARTIST TO VIEW";
 				return message;
 			}
-			/*else{
-				message = "SELECT A DECADE";
-				return message;
-			}*/
-			
-			//for(var j = 0; j < this.decadeCircles[i].artists.length; j++){
-			//	var a = this.decadeCircles[i].artists[j];
-			//}
 		}
 		message = "SELECT A DECADE";
 		return message;
 	},
+    /*
+        Helper function for animating objects
+    */
 	animate:function(ov, nv, grow, inc){
 		if(grow){
 			if(ov >= nv) return nv;
@@ -593,6 +602,10 @@ inspireApp.selection ={
 			return ov;
 		}
 	},
+    
+    /*
+       Helper function for drawing rounded rectangles
+    */
 	roundRect:function(x, y, radius, width, height){
 		ctx.beginPath();
 		ctx.moveTo(x, y + radius);
@@ -606,11 +619,19 @@ inspireApp.selection ={
 		ctx.lineTo(x, y + radius);
 		ctx.closePath();
 	},
+    
+    /*
+        Used to detect clicks inside circles.
+    */
 	pointInsideCircle:function(aX, aY, bX, bY, radius){
 		var dx = aX - bX;
 		var dy = aY - bY;
 		return dx * dx + dy * dy <= radius * radius;
 	},
+    
+    /*
+        Used to detect clicks inside rectangle shaped elements
+    */
 	pointInsideRect:function(aX, aY, w, h, bX, bY){
 		var left, right, top, bottom;
 		left = aX;
@@ -619,6 +640,10 @@ inspireApp.selection ={
 		bottom = aY + h;
 		return bX > left && bX < right && bY > top && bY < bottom;
 	},
+    
+    /*
+        Helper function for filling text on the canvas
+    */
 	drawText:function(string, x, y, weight, size, color, font, align){
 		ctx.textAlign = align;
 		ctx.textBaseline = "middle";	
@@ -626,9 +651,12 @@ inspireApp.selection ={
 		ctx.fillStyle = color;
 		ctx.fillText(string, x, y);	
 	},
+    /*
+    
+        Called by main, resets properties of 
+    
+    */
 	resetSelection:function(){
-		//this.dropZones = [];
-		console.log("Selection reset");
 		this.lastClick = undefined;
 		this.artistsSentToSpire = 0;
 		for(var j = 0; j < this.dropZones.length; j++){

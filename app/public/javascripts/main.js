@@ -11,26 +11,23 @@ inspireApp.main ={
 	GAME_STATE_SELECTION:1,
 	GAME_STATE_CONNECTION:2,
 	GAME_STATE_THANKS:3,
-	//GAME_STATE_EXPLORE:3,
-	//GAME_STATE_END:4,
 	canvas:undefined,
 	ctx:undefined,
 	artistData:undefined,
 	uiFont: {font: "Brandon_light", size: 36, color: "white", weight: "normal", align: "center"},
 	decadeCircleImages: ["assets/50s.png", "assets/60s.png", "assets/70s.png", "assets/80s.png", "assets/90s.png", "assets/00s.png"],
 	totalAssets: 10, // # of assets to be loaded 
-	// VARS
 	mouse:{},
 	mouseIsDown:false,
 	len:0,
 	canX:[], 
 	canY:[],
 	mouseDrag:[],
-	
-	// VARS
 	gameState:undefined,
 	
-	// FUNCTIONS
+    /*
+        Called after images are loaded, initializes inspireApp.
+    */
 	ready:function(){
 		console.log("ready");
 		// set W x H of the canvas
@@ -47,16 +44,13 @@ inspireApp.main ={
 		this.draw();
 	},
 	
+    /*
+        Main game loop, calls draw functions from each "class"
+    */
 	draw:function(){
 		var app = inspireApp.main;
-		requestAnimationFrame(this.draw.bind(this));
-		
+		requestAnimationFrame(this.draw.bind(this));		
 		// background
-		//ctx.save();
-		//ctx.fillStyle="white";
-		//ctx.fillRect(0,0,app.CANVAS_WIDTH,app.CANVAS_HEIGHT);
-		//ctx.restore();
-		console.log(this.gameState);
 		ctx.clearRect(0,0,this.CANVAS_WIDTH,this.CANVAS_HEIGHT);
 		// game functions
 		this.checkMouseDown();
@@ -65,61 +59,54 @@ inspireApp.main ={
 		inspireApp.connection.draw();
 		inspireApp.thanks.draw();
 	},
-
+    
+    /*
+        Changes the game state on call
+    */
 	changeGameState:function(currentState){
-		//if (this.gameState == this.GAME_STATE_START) this.gameState = this.GAME_STATE_SELECTION;
-		//else if(this.gameState == this.GAME_STATE_SELECTION) this.gameState = this.GAME_STATE_CONNECTION;
-		//else if(this.gameState == this.GAME_STATE_CONNECTION) this.gameState = this.GAME_STATE_THANKS;
-		//else if(this.gameState == this.GAME_STATE_THANKS) this.gameState = this.GAME_STATE_START; //this.resetInspireApp();
 		this.gameState = currentState;
 	},
 	
+    /*
+        Used to get the position of the mouse.
+    */
 	getMouse:function(e){
 		inspireApp.main.mouse.x = e.pageX - e.target.offsetLeft;
 		inspireApp.main.mouse.y = e.pageY - e.target.offsetTop;
-		//return mouse;
 	},
+    
+    /*
+        When the mouse and in the specified game state, run those click functions.
+    */
 	clickFunctions:function(e){
 		var app = inspireApp.main;
-		//console.log(inspireApp.main.canX[0]+", "+inspireApp.main.canY[0]);
 		if(app.gameState == app.GAME_STATE_START){
 			app.changeGameState(app.GAME_STATE_SELECTION);
 		}
 		else if(app.gameState == app.GAME_STATE_SELECTION){
-			//console.log(inspireApp.main.len);
-			//for(var i = 0; i < inspireApp.main.len; i++){
+
 				inspireApp.selection.checkClicks(app.mouse);
-				//console.log(inspireApp.main.canX[i],inspireApp.main.canY[i]);
-				//inspireApp.selection.checkClicks(inspireApp.main.canX[i],inspireApp.main.canY[i]);
-			//}
+				
 		}
 		else if(app.gameState == app.GAME_STATE_THANKS){
 			this.resetInspireApp();
 			app.changeGameState(app.GAME_STATE_START);
 		}
-		/*
-		else if(app.gameState == app.GAME_STATE_CONNECTION){
-			//inspireApp.connection.loaded = true;
-		}*/
+
 	},
+    
 	// Mouse is down
 	mouseDown:function(){
 		inspireApp.main.mouseIsDown = true;
-		//inspireApp.main.mouseXY();
 	},
 	// Mouse is up
 	mouseUp:function(){
 		inspireApp.main.mouseIsDown = false;
-		//inspireApp.main.mouseXY();
 	},
-	mouseXY:function(e){
-		if (!e)
-            e = event;
-        inspireApp.main.canX[0] = e.pageX - canvas.offsetLeft;
-        inspireApp.main.canY[0] = e.pageY - canvas.offsetTop;
-        inspireApp.main.len = 1;
-		//inspireApp.selection.drag(inspireApp.main.canX[0],inspireApp.main.canY[0]);
-	},
+	
+    /*
+        Checks if mouse down, turn off pointer events when mouse is down.
+    */
 	checkMouseDown:function(){
 
 		var elements = document.getElementsByTagName('div');
@@ -131,12 +118,15 @@ inspireApp.main ={
 			}
 		}
 	},
+    
+    /*
+        Retrieves image assets and stores them as image objects
+    */
 	preloadAssets:function(){
 		var loadedassets = 0;
 		var newImages = [];
 		function assetLoadPost(){
 			loadedassets ++;
-			//console.log("assets loaded "+loadedassets);
 			if(loadedassets == inspireApp.main.totalAssets){
 				// Initialize Inspire App
 				inspireApp.selection.decadeCircleImages = newImages;
@@ -181,6 +171,10 @@ inspireApp.main ={
 			}
 		}
 	},
+    
+    /*
+        Resizes front end assets
+    */
 	resizeAssets:function(img, w, h){
 		var newWH = {};
 		var oldWH = {w: img.width, h: img.height};
@@ -189,6 +183,12 @@ inspireApp.main ={
 		newWH.h = h;
 		return newWH;
 	},
+    
+    /*
+    
+        Called in on window load. Loops through artist images, creates image ovject, calls resizeImages, stores new artistImages in selection
+    
+    */
 	preloadImages:function(data){
 		var newImages = []; // array of image objects
 		var images = []; // array of image src's
@@ -207,8 +207,7 @@ inspireApp.main ={
 				var resizedImages = inspireApp.main.resizeImages(newImages, undefined, inspireApp.selection.dropZoneDimensions.h);			
 				inspireApp.selection.artistImages = resizedImages;
 				inspireApp.main.preloadAssets();
-				// Initialize Inspire App
-				//inspireApp.main.ready();		
+				// Initialize Inspire App	
 			}
 		}
 		for (var i = 0; i < images.length; i++){
@@ -222,8 +221,13 @@ inspireApp.main ={
 			}
 		}	
 	},
-	resizeImages:function(newImages, w, h){		
-		//var newDimensions = {w: w, h: h};		
+    
+    /* 
+    
+        Resizes artist images. Images have uniform heights 
+        
+    */
+	resizeImages:function(newImages, w, h){				
 		for(var i = 0; i < newImages.length; i++){
 			var oldWidth = newImages[i].width;
 			var oldHeight = newImages[i].height;
@@ -231,38 +235,17 @@ inspireApp.main ={
 			if(w < inspireApp.selection.dropZoneDimensions.w){
 				w = inspireApp.selection.dropZoneDimensions.w;
 				h = (w * oldHeight)/oldWidth;
-				//console.log("image width too small");
 			}
 			newImages[i].width = w;
 			newImages[i].height = h;		
 		}
 		return newImages;
 	},
-	touchDown:function(){
-		//inspireApp.main.mouseIsDown = true;
-		inspireApp.main.touchXY();
-		inspireApp.main.clickFunctions();
-	},
-	touchUp:function(e){
-		if (!e)
-        e = event;
 
-		inspireApp.selection.checkDropZones();
-        inspireApp.main.len = e.targetTouches.length;
-		//inspireApp.main.mouseIsDown = false;
-	},
-	touchXY:function(e) {
-        if (!e)
-            e = event;
-        e.preventDefault();
-        inspireApp.main.len = e.targetTouches.length;
-		
-        for (var i = 0; i < inspireApp.main.len; i++) {
-            inspireApp.main.canX[i] = e.targetTouches[i].pageX; //- canvas.offsetLeft;
-            inspireApp.main.canY[i] = e.targetTouches[i].pageY; //- canvas.offsetTop;
-			//console.log(inspireApp.main.canX[i]+", "+inspireApp.main.canY[i]);
-        }
-    },
+    
+    /*
+        Resets vars when inspireApp loops back to game state start.
+    */
 	resetInspireApp:function(){
 		var selection = inspireApp.selection;
 		var connection = inspireApp.connection;
@@ -270,14 +253,17 @@ inspireApp.main ={
 		selection.resetSelection();
 		// Connection
 		connection.resetConnection();
-		// Main
-		
+		// Main	
 		this.mouseIsDown = false;
-		//this.changeGameState(this.GAME_STATE_START);
 	}
 };
+
+/*
+
+        Window onload functions
+
+*/
 window.onload = function(){
-	//console.log(local_data.decade);
 	// set artist data
 	inspireApp.main.artistData = local_data;
 	// canvas
@@ -289,10 +275,6 @@ window.onload = function(){
 	this.canvas.addEventListener("mousedown", function(){inspireApp.main.clickFunctions(); inspireApp.main.mouseDown();}, false);
 	this.canvas.addEventListener("mouseup", function(){inspireApp.main.mouseUp();}, false);
 	this.canvas.addEventListener("mouseout", function(){inspireApp.main.mouseIsDown = false}, false);
-	// Touch Listeners
-	//this.canvas.addEventListener("touchstart", inspireApp.main.touchDown, false);
-    //this.canvas.addEventListener("touchend", inspireApp.main.touchUp, false);
-    //this.canvas.addEventListener("touchmove", inspireApp.main.touchXY, false);
 	window.addEventListener("mousemove", inspireApp.main.getMouse,false);
 	
 	window.socketHandler = SocketHandler();
@@ -313,6 +295,4 @@ window.onload = function(){
 		console.log(data);
 		audioObj.playSong();
 	});
-	// initialize app
-	//inspireApp.main.ready();
 }

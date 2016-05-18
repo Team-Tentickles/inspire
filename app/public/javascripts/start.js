@@ -4,6 +4,9 @@ var inspireApp = inspireApp || {};
 
 inspireApp.start ={
 	
+    /*
+        Draw Start screen
+    */
 	draw:function(){
 		var app = inspireApp.main;
 		if(app.gameState == app.GAME_STATE_START){
